@@ -1,4 +1,4 @@
-const CACHE = 'scheda-gt-v1';
+const CACHE = 'scheda-gt-v2';
 const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {

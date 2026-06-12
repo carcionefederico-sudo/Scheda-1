@@ -108,18 +108,18 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 .sets-lbl{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;font-weight:600}
 .sets-grid{display:flex;flex-direction:column;gap:8px}
 .set-row{display:flex;align-items:center;gap:8px}
-.set-num{width:34px;height:34px;border-radius:50%;border:2px solid #334155;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#64748b;flex-shrink:0;transition:all 0.2s}
+.set-num{width:26px;height:26px;border-radius:50%;border:2px solid #334155;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;flex-shrink:0;transition:all 0.2s}
 .set-num.done{background:#22c55e;border-color:#22c55e;color:#fff}
-.set-inputs{display:flex;gap:6px;flex:1}
-.set-field{flex:1;background:#0f172a;border:1.5px solid #334155;border-radius:10px;padding:10px 6px;color:#f8fafc;font-size:16px;font-family:inherit;text-align:center;-webkit-appearance:none;transition:border-color 0.2s;min-width:0}
+.set-inputs{display:flex;gap:5px;flex:1}
+.set-field{flex:1;background:#0f172a;border:1.5px solid #334155;border-radius:8px;padding:8px 4px;color:#f8fafc;font-size:14px;font-family:inherit;text-align:center;-webkit-appearance:none;transition:border-color 0.2s;min-width:0}
 .set-field:focus{outline:none;border-color:#60a5fa}
-.set-field::placeholder{color:#2d3f55;font-size:11px}
+.set-field::placeholder{color:#2d3f55;font-size:10px}
 .set-field.filled{border-color:#22c55e55;color:#22c55e}
-/* ✓ BUTTON — large and clear on iPhone portrait */
-.set-go{background:#22c55e;border:none;border-radius:10px;width:54px;height:44px;font-size:20px;font-weight:900;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;color:#fff;letter-spacing:-1px}
+/* ✓ BUTTON — compact for iPhone portrait */
+.set-go{background:#22c55e;border:none;border-radius:8px;width:38px;height:36px;font-size:16px;font-weight:900;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;color:#fff;letter-spacing:-1px}
 .set-go:active{transform:scale(0.9);background:#16a34a}
-.set-go.done-btn{background:#1e293b;color:#475569;font-size:16px}
-.prev-best{font-size:10px;color:#475569;margin-left:42px;margin-top:1px}
+.set-go.done-btn{background:#1e293b;color:#475569;font-size:13px}
+.prev-best{font-size:10px;color:#475569;margin-left:34px;margin-top:1px}
 .prev-best span{color:#818cf8;font-weight:600}
 
 /* STORICO */
@@ -562,7 +562,29 @@ function sf(exId,si,dayId){
   if(kg!==undefined)d[exId][si].kg=kg; if(rp!==undefined)d[exId][si].reps=rp; save(d);
   if(kg)document.getElementById('kg-'+exId+'-'+si)?.classList.add('filled');
   if(rp)document.getElementById('rp-'+exId+'-'+si)?.classList.add('filled');
+
+  // Auto-fill: se è la prima serie, copia kg/rip nelle serie successive ancora vuote
+  if(si===0){
+    const ex = DAYS[dayId]?.exercises.find(e=>e.id===exId);
+    if(ex){
+      for(let s=1;s<ex.sets;s++){
+        if(!d[exId][s]) d[exId][s]={};
+        const kgEl = document.getElementById('kg-'+exId+'-'+s);
+        const rpEl = document.getElementById('rp-'+exId+'-'+s);
+        if(kg && !d[exId][s].kg){
+          d[exId][s].kg = kg;
+          if(kgEl){ kgEl.value = kg; kgEl.classList.add('filled'); }
+        }
+        if(rp && !d[exId][s].reps){
+          d[exId][s].reps = rp;
+          if(rpEl){ rpEl.value = rp; rpEl.classList.add('filled'); }
+        }
+      }
+      save(d);
+    }
+  }
 }
+
 
 function md(exId,si,dayId){
   const d=load(); if(!d[exId])d[exId]={}; if(!d[exId][si])d[exId][si]={};
