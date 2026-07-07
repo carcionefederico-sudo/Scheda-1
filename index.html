@@ -16,19 +16,25 @@
      ═══════════════════════════════════════════
      Tutti i dati degli esercizi sono nella sezione
      "DATI ESERCIZI" nello <script> in fondo.
-     
+
      Ogni esercizio ha questi campi modificabili:
        name    → nome visualizzato
+       section → 'main' (stazione principale) o 'core' (core/fianchi dedicato)
        sets    → numero di serie (numero)
-       reps    → ripetizioni (testo, es. "8-10" o "12")
+       reps    → ripetizioni/schema (testo, es. "8-10" o "12-10-8-6")
        rest    → secondi di recupero (numero, non usato ma utile come nota)
        priority → true = stella ★, false = normale
        machine → nome macchinario principale
        machineAlt → alternativa se occupato
-       youtube → link ricerca YouTube (cambia solo search_query=...)
-       ytLabel → etichetta del pulsante video
-       note    → istruzioni tecniche
-     
+       note    → istruzioni tecniche + recupero + riempimento + drop set
+
+     Kg/rip inseriti si salvano SEMPRE (anche da un giorno all'altro):
+     la volta successiva i campi si auto-compilano con gli ultimi
+     valori usati, così vedi subito da dove ripartire.
+
+     Ogni esercizio ha anche una sezione note personali libere,
+     sempre salvata, indipendente dal giorno.
+
      Per chiedere modifiche scrivi a Claude:
      "Giorno A, esercizio 2: cambia sets a 4, reps a 8-10"
      oppure
@@ -47,7 +53,6 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 .hdr-icon{width:32px;height:32px;background:#22c55e;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .hdr-title{font-size:16px;font-weight:800;letter-spacing:-0.3px;line-height:1.1}
 .hdr-gym{font-size:10px;color:#22c55e;font-weight:600}
-.btn-storia{background:#1e293b;border:1px solid #334155;color:#94a3b8;border-radius:8px;padding:7px 12px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;font-weight:600}
 
 /* TABS */
 .day-tabs{display:flex;background:#0f172a;padding:0 12px;border-bottom:1px solid #1e293b;overflow-x:auto;scrollbar-width:none;gap:2px}
@@ -66,9 +71,9 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 .focus-meta{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .focus-badge{border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700}
 
-/* SECTION */
-.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:#475569;margin:16px 0 7px;padding-bottom:4px;border-bottom:1px solid #1e293b}
-.sec-body{font-size:13px;color:#94a3b8;line-height:1.6;background:#1e293b;border-radius:10px;padding:12px 14px;margin-bottom:4px}
+/* SECTION — colore diverso per tipo di sezione, per distinguerle a colpo d'occhio */
+.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;margin:16px 0 7px;padding-bottom:4px;border-bottom:1.5px solid #1e293b}
+.sec-body{font-size:13px;color:#94a3b8;line-height:1.6;background:#1e293b;border-radius:10px;padding:12px 14px;margin-bottom:4px;border-left:3px solid #334155}
 
 /* EXERCISE CARD */
 .ex-wrap{margin-bottom:10px}
@@ -94,17 +99,15 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 .ex-machine-box-val{font-size:12px;color:#e2e8f0;font-weight:600;line-height:1.4}
 .ex-machine-box-alt{font-size:11px;color:#475569;margin-top:3px}
 
-/* VIDEO BUTTON */
-.ex-video-btn{display:flex;align-items:center;gap:10px;background:#1a1040;border:1px solid #4338ca33;border-left:3px solid #6366f1;border-radius:8px;padding:10px 12px;margin-bottom:8px;text-decoration:none;color:#a5b4fc;-webkit-tap-highlight-color:transparent}
-.ex-video-btn:active{background:#251858}
-.ex-video-play{width:32px;height:32px;background:#6366f1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;padding-left:2px}
-.ex-video-text{flex:1}
-.ex-video-text strong{display:block;font-size:12px;color:#c7d2fe;font-weight:700}
-.ex-video-text span{font-size:10px;color:#6366f1;font-weight:600;text-transform:uppercase;letter-spacing:0.1em}
-.ex-video-arrow{font-size:18px;color:#4338ca;flex-shrink:0}
-
-/* NOTE */
+/* NOTE TECNICA */
 .ex-note-box{font-size:11px;color:#64748b;line-height:1.6;padding:8px 0 4px;border-bottom:1px solid #1e293b;margin-bottom:10px}
+
+/* NOTE PERSONALI — sempre salvate, indipendenti dal giorno */
+.ex-personal-note{margin-top:2px;margin-bottom:12px}
+.ex-personal-note-lbl{font-size:9px;color:#a78bfa;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;margin-bottom:5px}
+.note-field{width:100%;min-height:44px;background:#0f172a;border:1.5px solid #334155;border-left:3px solid #a78bfa;border-radius:8px;padding:8px 10px;color:#f8fafc;font-size:12px;font-family:inherit;resize:vertical;line-height:1.4}
+.note-field:focus{outline:none;border-color:#a78bfa}
+.note-field::placeholder{color:#334155}
 
 /* SETS */
 .sets-lbl{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;font-weight:600}
@@ -121,26 +124,6 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 .set-go{background:#22c55e;border:none;border-radius:8px;width:32px;height:32px;font-size:14px;font-weight:900;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;color:#fff;letter-spacing:-1px;padding:0}
 .set-go:active{transform:scale(0.9);background:#16a34a}
 .set-go.done-btn{background:#1e293b;color:#475569;font-size:12px}
-.prev-best{font-size:10px;color:#475569;margin-left:30px;margin-top:1px}
-.prev-best span{color:#818cf8;font-weight:600}
-
-/* STORICO */
-.storia-overlay{position:fixed;inset:0;background:#0f172a;z-index:900;display:none;flex-direction:column}
-.storia-overlay.show{display:flex}
-.storia-hdr{padding:env(safe-area-inset-top,16px) 16px 16px;background:#1e293b;display:flex;align-items:center;gap:12px;flex-shrink:0}
-.storia-hdr h2{font-size:17px;font-weight:700;flex:1}
-.btn-close{background:none;border:none;color:#94a3b8;font-size:24px;cursor:pointer;padding:4px;line-height:1}
-.storia-body{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
-.storia-day{margin-bottom:20px}
-.storia-day-title{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.storia-day-dot{width:8px;height:8px;border-radius:50%;background:#334155;flex-shrink:0}
-.storia-ex{background:#1e293b;border-radius:10px;padding:11px 13px;margin-bottom:7px}
-.storia-ex-name{font-size:12px;font-weight:700;margin-bottom:5px;color:#e2e8f0}
-.storia-sets{display:flex;flex-wrap:wrap;gap:5px}
-.storia-set{background:#0f172a;border-radius:6px;padding:4px 8px;font-size:11px;color:#94a3b8}
-.storia-set span{color:#60a5fa;font-weight:600}
-.storia-skipped{font-size:11px;color:#f87171;opacity:0.75;font-style:italic}
-.storia-empty{text-align:center;color:#334155;padding:48px 20px;font-size:14px;line-height:1.8}
 
 /* BANNERS */
 .complete-banner{background:linear-gradient(135deg,#14532d,#166534);border-radius:14px;padding:18px;margin-top:16px;text-align:center;display:none;border:1px solid #22c55e33}
@@ -177,15 +160,6 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 </head>
 <body>
 
-<!-- STORICO OVERLAY -->
-<div class="storia-overlay" id="storiaOverlay">
-  <div class="storia-hdr">
-    <h2>📊 Storico Allenamenti</h2>
-    <button class="btn-close" onclick="closeStoria()">✕</button>
-  </div>
-  <div class="storia-body" id="storiaBody"></div>
-</div>
-
 <!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
@@ -196,7 +170,6 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
         <div class="hdr-gym">📍 GreenTheory Osmannoro</div>
       </div>
     </div>
-    <button class="btn-storia" onclick="openStoria()">📊 Storico</button>
   </div>
 </div>
 
@@ -223,22 +196,24 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 <div id="day-a">
   <div class="focus-card" style="background:linear-gradient(135deg,#1e3a5f18,#0f172a);border-color:#3b6fd433">
     <div class="focus-lbl" style="color:#3b6fd4">Lunedì</div>
-    <div class="focus-title">Petto + Schiena + Obliqui</div>
-    <div class="focus-sub">Push/Pull ai macchinari — petto largo + schiena a V</div>
+    <div class="focus-title">Push — Petto, Spalle, Tricipiti</div>
+    <div class="focus-sub">Stazione fissa + drop set — zero spostamenti tra macchinari</div>
     <div class="focus-meta">
-      <span class="focus-badge" style="background:#3b6fd422;color:#60a5fa">~540–640 kcal</span>
-      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 60 min</span>
+      <span class="focus-badge" style="background:#3b6fd422;color:#60a5fa">~480–560 kcal</span>
+      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 50 min</span>
     </div>
   </div>
-  <div class="sec-lbl">🔆 Riscaldamento — 5 min</div>
-  <div class="sec-body">5 min ellittica o tapis roulant 6–7 km/h + rotazioni spalle a vuoto</div>
-  <div class="sec-lbl">🏋️ Esercizi</div>
+  <div class="sec-lbl" style="color:#22d3ee;border-bottom-color:#22d3ee55">🔆 Riscaldamento — 5 min</div>
+  <div class="sec-body" style="border-left-color:#22d3ee">5 min ellittica o tapis roulant 6–7 km/h + rotazioni spalle a vuoto</div>
+  <div class="sec-lbl" style="color:#3b6fd4;border-bottom-color:#3b6fd455">🏋️ Stazioni fisse</div>
   <div id="exs-a"></div>
-  <div class="sec-lbl">🏃 Cardio</div>
-  <div class="sec-body">12 min HIIT ellittica: 40 sec sforzo max / 20 sec recupero × 12 giri</div>
-  <div class="sec-lbl">🧘 Defaticamento — 5 min</div>
-  <div class="sec-body">Stretching petto (apertura braccia al muro), lat e obliqui laterali</div>
-  <div class="complete-banner" id="done-a"><h3>🎉 Lunedì Completato!</h3><p>Ottimo lavoro. Dati salvati nello storico.</p></div>
+  <div class="sec-lbl" style="color:#eab308;border-bottom-color:#eab30855">🎯 Core & Fianchi</div>
+  <div id="core-a"></div>
+  <div class="sec-lbl" style="color:#f43f5e;border-bottom-color:#f43f5e55">🔥 Finisher — 4 min</div>
+  <div class="sec-body" style="border-left-color:#f43f5e">Bike o vogatore: 20 sec massimale / 20 sec recupero × 6 giri</div>
+  <div class="sec-lbl" style="color:#a78bfa;border-bottom-color:#a78bfa55">🧘 Defaticamento — 5 min</div>
+  <div class="sec-body" style="border-left-color:#a78bfa">Stretching petto (apertura braccia al muro), spalle e tricipiti</div>
+  <div class="complete-banner" id="done-a"><h3>🎉 Lunedì Completato!</h3><p>Ottimo lavoro. Pesi e rip salvati per la prossima volta.</p></div>
   <div class="partial-banner" id="partial-a"><h3>💾 Allenamento Salvato</h3><p id="partial-a-msg"></p></div>
   <button class="finish-btn" onclick="finishDay('a')">🏁 Termina allenamento</button>
   <button class="reset-btn" onclick="resetDay('a')">↺ Azzera giornata</button>
@@ -248,21 +223,23 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 <div id="day-b" style="display:none">
   <div class="focus-card" style="background:linear-gradient(135deg,#43140718,#0f172a);border-color:#c2560a33">
     <div class="focus-lbl" style="color:#c2560a">Mercoledì</div>
-    <div class="focus-title">Gambe & Glutei + Core</div>
-    <div class="focus-sub">Muscoli più grandi ai macchinari — massimo consumo calorico</div>
+    <div class="focus-title">Legs — Gambe, Glutei, Fianchi</div>
+    <div class="focus-sub">Stazione fissa + drop set — muscoli più grandi, massimo consumo</div>
     <div class="focus-meta">
-      <span class="focus-badge" style="background:#c2560a22;color:#fb923c">~550–650 kcal</span>
-      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 62 min</span>
+      <span class="focus-badge" style="background:#c2560a22;color:#fb923c">~520–600 kcal</span>
+      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 50 min</span>
     </div>
   </div>
-  <div class="sec-lbl">🔆 Riscaldamento — 5 min</div>
-  <div class="sec-body">5 min cyclette resistenza medio-alta — attiva gambe e glutei</div>
-  <div class="sec-lbl">🏋️ Esercizi</div>
+  <div class="sec-lbl" style="color:#22d3ee;border-bottom-color:#22d3ee55">🔆 Riscaldamento — 5 min</div>
+  <div class="sec-body" style="border-left-color:#22d3ee">5 min cyclette resistenza medio-alta — attiva gambe e glutei</div>
+  <div class="sec-lbl" style="color:#c2560a;border-bottom-color:#c2560a55">🏋️ Stazioni fisse</div>
   <div id="exs-b"></div>
-  <div class="sec-lbl">🏃 Cardio</div>
-  <div class="sec-body">10 min tapis roulant inclinazione 10–12%, 5.5 km/h</div>
-  <div class="sec-lbl">🧘 Defaticamento — 5 min</div>
-  <div class="sec-body">Stretching gambe, glutei, flessori dell'anca e piriforme</div>
+  <div class="sec-lbl" style="color:#eab308;border-bottom-color:#eab30855">🎯 Core & Fianchi</div>
+  <div id="core-b"></div>
+  <div class="sec-lbl" style="color:#f43f5e;border-bottom-color:#f43f5e55">🔥 Finisher — 4 min</div>
+  <div class="sec-body" style="border-left-color:#f43f5e">Affondi camminati o step-up, ritmo continuo senza fermarti</div>
+  <div class="sec-lbl" style="color:#a78bfa;border-bottom-color:#a78bfa55">🧘 Defaticamento — 5 min</div>
+  <div class="sec-body" style="border-left-color:#a78bfa">Stretching gambe, glutei, flessori dell'anca e piriforme</div>
   <div class="complete-banner" id="done-b"><h3>🎉 Mercoledì Completato!</h3><p>Eccellente. Le gambe ti ringrazieranno.</p></div>
   <div class="partial-banner" id="partial-b"><h3>💾 Allenamento Salvato</h3><p id="partial-b-msg"></p></div>
   <button class="finish-btn" onclick="finishDay('b')">🏁 Termina allenamento</button>
@@ -273,21 +250,23 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 <div id="day-c" style="display:none">
   <div class="focus-card" style="background:linear-gradient(135deg,#052e1618,#0f172a);border-color:#1a7a4233">
     <div class="focus-lbl" style="color:#22c55e">Venerdì</div>
-    <div class="focus-title">Petto + Spalle + Full Body</div>
-    <div class="focus-sub">Secondo stimolo petto + lavoro metabolico a fine settimana</div>
+    <div class="focus-title">Pull — Schiena, Bicipiti, Tricipiti</div>
+    <div class="focus-sub">Stazione fissa + drop set — dorso largo per il V-taper</div>
     <div class="focus-meta">
-      <span class="focus-badge" style="background:#1a7a4222;color:#4ade80">~560–680 kcal</span>
-      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 61 min</span>
+      <span class="focus-badge" style="background:#1a7a4222;color:#4ade80">~470–550 kcal</span>
+      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 50 min</span>
     </div>
   </div>
-  <div class="sec-lbl">🔆 Riscaldamento — 5 min</div>
-  <div class="sec-body">5 min ellittica ritmo libero + rotazioni spalle</div>
-  <div class="sec-lbl">🏋️ Esercizi</div>
+  <div class="sec-lbl" style="color:#22d3ee;border-bottom-color:#22d3ee55">🔆 Riscaldamento — 5 min</div>
+  <div class="sec-body" style="border-left-color:#22d3ee">5 min ellittica ritmo libero + rotazioni spalle</div>
+  <div class="sec-lbl" style="color:#1a7a42;border-bottom-color:#1a7a4255">🏋️ Stazioni fisse</div>
   <div id="exs-c"></div>
-  <div class="sec-lbl">🏃 Cardio</div>
-  <div class="sec-body">18 min tapis roulant: 9 min a 8 km/h + 9 min alternando 1 min a 10 km/h / 1 min a 6 km/h</div>
-  <div class="sec-lbl">🧘 Defaticamento — 5 min</div>
-  <div class="sec-body">Stretching completo: petto al muro, spalle, fianchi e obliqui</div>
+  <div class="sec-lbl" style="color:#eab308;border-bottom-color:#eab30855">🎯 Core & Fianchi</div>
+  <div id="core-c"></div>
+  <div class="sec-lbl" style="color:#f43f5e;border-bottom-color:#f43f5e55">🔥 Finisher — 4 min</div>
+  <div class="sec-body" style="border-left-color:#f43f5e">Corda o mountain climber, ritmo continuo sostenuto</div>
+  <div class="sec-lbl" style="color:#a78bfa;border-bottom-color:#a78bfa55">🧘 Defaticamento — 5 min</div>
+  <div class="sec-body" style="border-left-color:#a78bfa">Stretching completo: dorso, bicipiti/tricipiti, fianchi e obliqui</div>
   <div class="complete-banner" id="done-c"><h3>🎉 Venerdì Completato!</h3><p>Settimana chiusa alla grande! Buon recupero.</p></div>
   <div class="partial-banner" id="partial-c"><h3>💾 Allenamento Salvato</h3><p id="partial-c-msg"></p></div>
   <button class="finish-btn" onclick="finishDay('c')">🏁 Termina allenamento</button>
@@ -297,10 +276,10 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 <!-- GUIDA -->
 <div id="day-note" style="display:none">
   <div class="info-card"><div class="info-card-ico">📲</div><div class="info-card-title">Aggiungi alla Home Screen (iPhone)</div><div class="info-card-body">In Safari tocca l'icona <strong>Condividi</strong> (quadrato con freccia) → <strong>"Aggiungi a schermata Home"</strong>. L'app si installa come icona e funziona anche senza connessione.</div></div>
-  <div class="info-card"><div class="info-card-ico">▶️</div><div class="info-card-title">Video esercizi</div><div class="info-card-body">Dentro ogni esercizio c'è il pulsante viola <em>"Guarda esecuzione"</em>. Un tap apre YouTube in Safari con la ricerca giusta. Cerca sempre video con il macchinario guidato.</div></div>
   <div class="info-card"><div class="info-card-ico">✅</div><div class="info-card-title">Registrare le serie</div><div class="info-card-body">Inserisci <strong>kg</strong> e <strong>rip</strong> nei campi, poi tocca il grande tasto verde <strong>✓</strong>. Il cerchio diventa verde. Tocca <strong>↺</strong> per annullare.</div></div>
-  <div class="info-card"><div class="info-card-ico">🏁</div><div class="info-card-title">Termina allenamento</div><div class="info-card-body">Premi "Termina allenamento" anche se non hai finito tutto. Gli esercizi completati vengono salvati normalmente. Quelli saltati vengono segnati come ⛔ nello storico.</div></div>
-  <div class="info-card"><div class="info-card-ico">📊</div><div class="info-card-title">Storico</div><div class="info-card-body">Tocca <strong>Storico</strong> in alto. Vedi tutti gli allenamenti con pesi e rip. Sotto ogni esercizio compare in viola il miglior peso della sessione precedente — il tuo riferimento per progredire.</div></div>
+  <div class="info-card"><div class="info-card-ico">🔁</div><div class="info-card-title">Auto-compilazione</div><div class="info-card-body">I kg e le rip che usi restano sempre salvati. La prossima volta che apri un esercizio, i campi si riempiono da soli con gli ultimi valori usati: vedi subito da dove eri arrivato e puoi solo confermare o correggere.</div></div>
+  <div class="info-card"><div class="info-card-ico">📝</div><div class="info-card-title">Note personali</div><div class="info-card-body">Sotto ogni esercizio c'è un piccolo campo <strong>note</strong> tutto tuo: scrivi sensazioni, aggiustamenti, promemoria. Resta salvato per sempre, indipendentemente dal giorno.</div></div>
+  <div class="info-card"><div class="info-card-ico">🏁</div><div class="info-card-title">Termina allenamento</div><div class="info-card-body">Premi "Termina allenamento" anche se non hai finito tutto. Gli esercizi non completati vengono segnati come non svolti, ma i dati inseriti restano comunque salvati.</div></div>
   <div class="info-card"><div class="info-card-ico">✏️</div><div class="info-card-title">Modificare la scheda</div><div class="info-card-body">Scrivi a Claude con la descrizione della modifica:<br><em>"Giorno A, esercizio 2: cambia serie a 4, rip a 8–10"</em><br><em>"Aggiungi al Giorno B: Leg Extension, 3 serie, 15 rip"</em><br>Claude aggiorna il file e te lo ridà in pochi secondi.</div></div>
 </div>
 
@@ -315,214 +294,157 @@ const DAYS = {
   a: {
     accent:'#3b6fd4', light:'#dbeafe',
     exercises:[
-      { id:'a1', name:'Chest Press inclinata', sets:4, reps:'6–8', rest:90,
+      { id:'a1', name:'Chest Press (piana o inclinata)', section:'main', sets:4, reps:'10-8-6-6', rest:100,
         tag:'PETTO', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
-        machine:'Macchinario Chest Press inclinata (seduta, presa ampia)',
-        machineAlt:'Alt: Chest Press piana se inclinata è occupata',
-        youtube:'https://www.youtube.com/results?search_query=chest+press+inclinata+macchinario+esecuzione+corretta',
-        ytLabel:'Chest Press inclinata — tecnica al macchinario',
-        note:'⭐ Regola il sedile: impugnature all\'altezza petto medio-alto. Spingi in avanti e leggermente verso l\'alto. Discesa lenta 2 sec. Carica progressivamente ogni settimana.' },
-      { id:'a2', name:'Pec Deck / Farfalla', sets:3, reps:'12–15', rest:45,
-        tag:'PETTO', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
-        machine:'Pec Deck (macchinario farfalla)',
-        machineAlt:'Alt: Cable crossover cavi bassi',
-        youtube:'https://www.youtube.com/results?search_query=pec+deck+farfalla+macchinario+tecnica+corretta',
-        ytLabel:'Pec Deck farfalla — tecnica al macchinario',
-        note:'⭐ Schiena incollata allo schienale. Gomiti sempre leggermente flessi. Chiudi lento, apri controllato — senti lo stretch nel petto.' },
-      { id:'a3', name:'Chest Press piana', sets:3, reps:'10–12', rest:60,
-        tag:'PETTO', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
-        machine:'Macchinario Chest Press piana',
-        machineAlt:'Alt: già fatto sopra, salta se stanco',
-        youtube:'https://www.youtube.com/results?search_query=chest+press+piana+macchinario+tecnica',
-        ytLabel:'Chest Press piana — tecnica al macchinario',
-        note:'⭐ Sedile più basso rispetto all\'inclinata. Completa il lavoro su tutto il petto: alto (inclinata) + medio-basso (piana).' },
-      { id:'a4', name:'Lat Machine presa larga', sets:4, reps:'10–12', rest:60,
-        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:true,
-        machine:'Lat Machine cavo alto, presa larga prona',
-        machineAlt:'Alt: Lat Machine presa neutra o stretta',
-        youtube:'https://www.youtube.com/results?search_query=lat+machine+presa+larga+dorsali+tecnica+corretta',
-        ytLabel:'Lat Machine presa larga — dorsali',
-        note:'★ Blocca le cosce sotto i supporti. Tira verso il petto, non il mento. Petto aperto in cima. Fondamentale per la schiena larga — contrasto visivo ai fianchi.' },
-      { id:'a5', name:'Rematore seduto al cavo', sets:3, reps:'10–12', rest:60,
-        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:false,
-        machine:'Low Pulley / Row Machine (cavo basso seduto)',
-        machineAlt:'Alt: Rematore T-bar se disponibile',
-        youtube:'https://www.youtube.com/results?search_query=rematore+seduto+cavo+basso+low+row+tecnica',
-        ytLabel:'Rematore seduto — cavo basso',
-        note:'Tira verso l\'ombelico, gomiti vicini ai fianchi. Schiena dritta, non oscillare. Spessore dorsale.' },
-      { id:'a6', name:'Cable Woodchop obliqui', sets:3, reps:'12 per lato', rest:30,
-        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Cavo alto — movimento diagonale dall\'alto al basso',
-        machineAlt:'Alt: cavo basso verso l\'alto (stessa macchina)',
-        youtube:'https://www.youtube.com/results?search_query=cable+woodchop+obliqui+cavo+alto+tecnica',
-        ytLabel:'Cable Woodchop — obliqui ai cavi',
-        note:'★ Di fianco al cavo, prendi la corda in alto. Tira in diagonale verso il basso e l\'esterno. Lento — è il core che lavora, non le braccia. Diretto sui fianchi.' },
-      { id:'a7', name:'Ab Crunch Machine', sets:3, reps:'15–20', rest:30,
-        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Macchinario Crunch Addominali isotonic',
-        machineAlt:'Alt: Plank laterale 30 sec per lato',
-        youtube:'https://www.youtube.com/results?search_query=ab+crunch+machine+addominali+macchinario+tecnica',
-        ytLabel:'Ab Crunch Machine — addominali',
-        note:'★ Lento, 1 secondo in contrazione. Non usare i flessori dell\'anca — è il core che lavora. Peso leggero, più ripetizioni.' },
+        machine:'Macchinario Chest Press (scegli piana o inclinata, resta lì tutto il blocco)',
+        machineAlt:'Alt: se entrambe occupate, Dip machine invertita con la stazione 3',
+        note:'⭐ Piramidale: 10-8-6-6, aumenta il carico ad ogni serie. Tra una serie e l\'altra (100 sec) fai un PLANK 30-40 sec sul posto — non ti muovi dalla macchina. Alla serie finale: DROP SET — scarica il peso del 20-30% e fai altre 10-12 rip a cedimento.' },
+      { id:'a2', name:'Shoulder Press / Military Press', section:'main', sets:4, reps:'8-10', rest:90,
+        tag:'SPALLE', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:true,
+        machine:'Macchinario Shoulder Press seduta',
+        machineAlt:'Alt: Military Press guidata se disponibile',
+        note:'★ 4 serie da 8-10 rip. Tra le serie (90 sec): SIDE PLANK 25 sec per lato, sul posto. Spalle larghe = trucco ottico più efficace per i fianchi. Alla serie finale: drop set, scarica il peso e continua a cedimento.' },
+      { id:'a3', name:'Dip Machine (assistita)', section:'main', sets:4, reps:'8-10', rest:90,
+        tag:'PETTO/TRICIPITI', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
+        machine:'Assisted Dip Machine',
+        machineAlt:'Alt: Chest Press range ampio se dip machine occupata',
+        note:'⭐ Busto leggermente inclinato avanti = più petto. Tra le serie (90 sec): mountain climber lento 20 sec sul posto. Alla serie finale: drop set — riduci l\'assistenza (più peso reale) o aggiungi una zavorra leggera, continua a cedimento.' },
+      { id:'a4', name:'Russian Twist', section:'core', sets:3, reps:'15+15', rest:45,
+        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
+        machine:'Corpo libero, con disco o manubrio leggero',
+        machineAlt:'Alt: cable woodchop se il cavo è libero',
+        note:'★ Lento e controllato, non usare lo slancio. Diretto su obliqui e fianchi.' },
+      { id:'a5', name:'Sit Up', section:'core', sets:3, reps:'20', rest:45,
+        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:false,
+        machine:'Corpo libero a terra',
+        machineAlt:'Alt: Ab Crunch Machine se preferisci',
+        note:'Ritmo controllato, non strappare col collo.' },
     ]
   },
   b: {
     accent:'#c2560a', light:'#ffedd5',
     exercises:[
-      { id:'b1', name:'Leg Press 45° piedi alti-larghi', sets:4, reps:'10–12', rest:90,
-        tag:'GLUTEI', tagBg:'#fef3c7', tagColor:'#92400e', priority:true,
-        machine:'Leg Press 45° (piattaforma inclinata)',
+      { id:'b1', name:'Squat o Leg Press 45°', section:'main', sets:4, reps:'12-10-8-6', rest:110,
+        tag:'GAMBE/GLUTEI', tagBg:'#fef3c7', tagColor:'#92400e', priority:true,
+        machine:'Leg Press 45° (piattaforma inclinata) o Squat libero',
         machineAlt:'Alt: Hack Squat guidato se disponibile',
-        youtube:'https://www.youtube.com/results?search_query=leg+press+45+piedi+alti+larghi+glutei+tecnica',
-        ytLabel:'Leg Press 45° — piedi alti e larghi per i glutei',
-        note:'★ Piedi alti e larghi = più glutei. Scendi fino a 90° senza staccare i glutei dal sedile. Non bloccare le ginocchia in estensione.' },
-      { id:'b2', name:'Romanian Deadlift', sets:4, reps:'10–12', rest:75,
-        tag:'GLUTEI', tagBg:'#fef3c7', tagColor:'#92400e', priority:true,
-        machine:'Manubri o cavo basso, oppure macchinario stacco guidato',
-        machineAlt:'Alt: Leg Curl sdraiato se preferisci macchinario',
-        youtube:'https://www.youtube.com/results?search_query=romanian+deadlift+manubri+glutei+femorali+tecnica',
-        ytLabel:'Romanian Deadlift — glutei e femorali',
-        note:'★ Schiena piatta, carica i glutei nella risalita. I femorali devono "tirare". Ginocchia leggermente flesse, non bloccarle.' },
-      { id:'b3', name:'Hip Thrust Machine', sets:4, reps:'12–15', rest:60,
-        tag:'GLUTEI', tagBg:'#fef3c7', tagColor:'#92400e', priority:true,
-        machine:'Hip Thrust Machine (macchinario dedicato glutei)',
-        machineAlt:'Alt: Leg Press piedi altissimi (simula il movimento)',
-        youtube:'https://www.youtube.com/results?search_query=hip+thrust+machine+macchinario+glutei+tecnica',
-        ytLabel:'Hip Thrust Machine — gluteo massimo',
-        note:'★ Spingi col tallone. Contrai i glutei in cima e tieni 1 sec. Molto più comodo del bilanciere.' },
-      { id:'b4', name:'Leg Press piedi medi', sets:3, reps:'12–15', rest:60,
+        note:'★ Piramidale 12-10-8-6, carico crescente. Tra le serie (110 sec): HOLLOW HOLD 30 sec sul posto. Piedi alti e larghi = più glutei. Alla serie finale: drop set, scarica peso, 12-15 rip a cedimento.' },
+      { id:'b2', name:'Leg Curl', section:'main', sets:3, reps:'10-12', rest:75,
         tag:'GAMBE', tagBg:'#ffedd5', tagColor:'#9a3412', priority:false,
-        machine:'Leg Press 45° o orizzontale, piedi in posizione media',
-        machineAlt:'Alt: Leg Extension per isolare i quadricipiti',
-        youtube:'https://www.youtube.com/results?search_query=leg+press+quadricipiti+posizione+piedi+tecnica',
-        ytLabel:'Leg Press — quadricipiti',
-        note:'Piedi in posizione media = quadricipiti. Non affaticarti troppo qui — i glutei sono la priorità.' },
-      { id:'b5', name:'Leg Curl femorali', sets:3, reps:'12–15', rest:60,
+        machine:'Leg Curl seduto o sdraiato',
+        machineAlt:'Alt: Romanian Deadlift con manubri se preferisci',
+        note:'Fletti lentamente, controlla il ritorno. Tra le serie (75 sec): WALL SIT 30 sec sul posto. Alla serie finale: drop set leggero.' },
+      { id:'b3', name:'Leg Extension', section:'main', sets:3, reps:'10-12', rest:75,
         tag:'GAMBE', tagBg:'#ffedd5', tagColor:'#9a3412', priority:false,
-        machine:'Leg Curl seduto o sdraiato (macchinario femorali)',
-        machineAlt:'Alt: già parzialmente coperto dal Romanian deadlift',
-        youtube:'https://www.youtube.com/results?search_query=leg+curl+macchinario+femorali+tecnica+corretta',
-        ytLabel:'Leg Curl — femorali al macchinario',
-        note:'Fletti lentamente, controlla la fase di ritorno. Sostituisce gli affondi bulgari — più sicuro.' },
-      { id:'b6', name:'Pallof Press anti-rotazione', sets:3, reps:'12 per lato', rest:30,
-        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Cable tower — altezza ombelico',
-        machineAlt:'Alt: Ab Crunch Machine con torsione',
-        youtube:'https://www.youtube.com/results?search_query=pallof+press+cavo+core+anti+rotazione+tecnica',
-        ytLabel:'Pallof Press — core anti-rotazione',
-        note:'★ Di fianco al cavo, mani al petto. Spingi in avanti senza ruotare — tieni 2 sec. Il core resiste alla rotazione: diretto sui fianchi laterali.' },
-      { id:'b7', name:'Ab Crunch con torsione', sets:3, reps:'15 per lato', rest:30,
-        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:false,
-        machine:'Macchinario addominali con rotazione o Ab Crunch classico',
-        machineAlt:'Alt: Crunch al cavo con corda dall\'alto',
-        youtube:'https://www.youtube.com/results?search_query=crunch+addominali+torsione+obliqui+macchinario',
-        ytLabel:'Ab Crunch con torsione — obliqui',
-        note:'Core profondo. Torsione per gli obliqui. Lento — la velocità riduce l\'efficacia.' },
+        machine:'Leg Extension (macchinario quadricipiti)',
+        machineAlt:'Alt: Leg Press piedi medi',
+        note:'Tra le serie (75 sec): CALF RAISE a corpo libero 15-20 rip sul bordo della pedana, senza spostarti. Alla serie finale: drop set.' },
+      { id:'b4', name:'Plank con toccata spalla', section:'core', sets:3, reps:'40 sec', rest:45,
+        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
+        machine:'Corpo libero a terra',
+        machineAlt:'Alt: plank statico se preferisci',
+        note:'★ Bacino stabile, non ruotare mentre tocchi la spalla — anti-rotazione, lavora sui fianchi.' },
+      { id:'b5', name:'Side Plank con abduzione', section:'core', sets:3, reps:'12 per lato', rest:45,
+        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
+        machine:'Corpo libero a terra',
+        machineAlt:'Alt: side plank statico se stanco',
+        note:'★ Alza e abbassa la gamba superiore mantenendo il bacino alto. Diretto su obliqui e fianco esterno.' },
     ]
   },
   c: {
     accent:'#1a7a42', light:'#dcfce7',
     exercises:[
-      { id:'c1', name:'Chest Press piana (2° stimolo)', sets:4, reps:'10–12', rest:75,
-        tag:'PETTO', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
-        machine:'Macchinario Chest Press piana',
-        machineAlt:'Alt: Chest Press inclinata se preferisci alternare',
-        youtube:'https://www.youtube.com/results?search_query=chest+press+piana+macchinario+tecnica',
-        ytLabel:'Chest Press piana — secondo stimolo petto',
-        note:'⭐ Secondo stimolo settimanale per il petto. Stesso peso di lunedì o +1 tacca. Discesa lenta (2–3 sec) per massimizzare lo stimolo.' },
-      { id:'c2', name:'Dip Machine petto-tricipiti', sets:3, reps:'10–12', rest:60,
-        tag:'PETTO', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
-        machine:'Assisted Dip Machine (macchinario dip assistito)',
-        machineAlt:'Alt: Chest Press range ampio se dip machine non c\'è',
-        youtube:'https://www.youtube.com/results?search_query=dip+machine+assistita+petto+tricipiti+tecnica',
-        ytLabel:'Dip Machine — petto basso e tricipiti',
-        note:'⭐ Busto leggermente inclinato avanti = più petto, meno tricipiti. Regola il contrappeso per gestire il peso esatto.' },
-      { id:'c3', name:'Shoulder Press spalle', sets:3, reps:'10–12', rest:60,
-        tag:'SPALLE', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:true,
-        machine:'Macchinario Shoulder Press / Military Press seduta',
-        machineAlt:'Alt: Lateral Raise machine se disponibile',
-        youtube:'https://www.youtube.com/results?search_query=shoulder+press+macchinario+spalle+tecnica+corretta',
-        ytLabel:'Shoulder Press — spalle al macchinario',
-        note:'★ Schiena incollata allo schienale. Non alzare le spalle verso le orecchie. Spalle larghe = trucco ottico più efficace per i fianchi.' },
-      { id:'c4', name:'Lat Machine presa stretta', sets:3, reps:'10–12', rest:60,
-        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:false,
-        machine:'Lat Machine presa stretta o V-bar neutro',
-        machineAlt:'Alt: Assisted Pull-up machine se disponibile',
-        youtube:'https://www.youtube.com/results?search_query=lat+machine+presa+stretta+vbar+dorsali+tecnica',
-        ytLabel:'Lat Machine presa stretta — dorsali',
-        note:'Presa diversa dal lunedì per stimolare il dorsale da angolo diverso. Tira verso il petto, non verso l\'ombelico.' },
-      { id:'c5', name:'Leg Curl + Extension superset', sets:4, reps:'15', rest:45,
-        tag:'FULL BODY', tagBg:'#f1f5f9', tagColor:'#334155', priority:true,
-        machine:'Leg Curl + Leg Extension (stessa macchina o due separate)',
-        machineAlt:'Alt: Leg Press a ritmo veloce',
-        youtube:'https://www.youtube.com/results?search_query=leg+curl+leg+extension+superset+tecnica+macchinario',
-        ytLabel:'Leg Curl + Extension — superset metabolico',
-        note:'★ Superset: Leg Curl (femorali) → senza pausa → Leg Extension (quadricipiti) → riposa 45 sec. Alta intensità, brucia molte calorie.' },
-      { id:'c6', name:'Cable Obliqui variante', sets:3, reps:'12 per lato', rest:30,
-        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Cable tower cavo alto o cavo basso',
-        machineAlt:'Alt: Ab crunch machine con torsione',
-        youtube:'https://www.youtube.com/results?search_query=cable+woodchop+reverse+obliqui+variante+tecnica',
-        ytLabel:'Cable Obliqui — variante rispetto a lunedì',
-        note:'★ Alterna alto→basso e basso→alto rispetto al lunedì per stimolare gli obliqui da angoli diversi.' },
-      { id:'c7', name:'Ab Crunch Machine', sets:3, reps:'20', rest:30,
+      { id:'c1', name:'Lat Machine', section:'main', sets:4, reps:'10-8-6-6', rest:100,
+        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:true,
+        machine:'Lat Machine cavo alto, presa larga prona',
+        machineAlt:'Alt: presa neutra o stretta se la larga è scomoda',
+        note:'⭐ Piramidale 10-8-6-6. Tira verso il petto, non il mento. Tra le serie (100 sec): PLANK 40 sec sul posto. Fondamentale per la schiena larga — contrasto visivo ai fianchi. Alla serie finale: drop set.' },
+      { id:'c2', name:'Cable Row o Pulley basso', section:'main', sets:4, reps:'8-10', rest:90,
+        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:true,
+        machine:'Low Pulley / Row Machine (cavo basso seduto)',
+        machineAlt:'Alt: Rematore T-bar se disponibile',
+        note:'Tira verso l\'ombelico, gomiti vicini ai fianchi. Tra le serie (90 sec): SIDE PLANK 25 sec per lato. Alla serie finale: drop set.' },
+      { id:'c3', name:'Curl bicipiti + French Press', section:'main', sets:3, reps:'10-12', rest:60,
+        tag:'BRACCIA', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:false,
+        machine:'Manubri o cavo, zona rastrelliera pesi liberi',
+        machineAlt:'Alt: macchinario curl/tricipiti se disponibile',
+        note:'Curl e French Press nella stessa zona, senza spostarti. Tra le serie (60 sec): hold isometrico a metà curl 15 sec. Alla serie finale: drop set su entrambi.' },
+      { id:'c4', name:'Sit Up', section:'core', sets:3, reps:'20', rest:45,
         tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:false,
-        machine:'Macchinario crunch addominali',
-        machineAlt:'Alt: Crunch al cavo con corda dall\'alto',
-        youtube:'https://www.youtube.com/results?search_query=ab+crunch+machine+addominali+macchinario+tecnica',
-        ytLabel:'Ab Crunch Machine — terzo stimolo core',
-        note:'Peso leggero, tante rip — obiettivo bruciare. Contrazione 1 sec in cima.' },
+        machine:'Corpo libero a terra',
+        machineAlt:'Alt: Ab Crunch Machine',
+        note:'Ritmo controllato, contrazione 1 sec in cima.' },
+      { id:'c5', name:'Side Plank', section:'core', sets:3, reps:'30 sec per lato', rest:45,
+        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
+        machine:'Corpo libero a terra',
+        machineAlt:'Alt: side plank con ginocchio a terra se serve',
+        note:'★ Bacino allineato, non farlo cadere. Tonifica il fianco esterno.' },
     ]
   }
 };
 
 // ═══ STORAGE ═══
+// Dati "di oggi" (serie fatte/non fatte) — chiave per data, si azzera naturalmente ogni giorno
 let currentDay = 'a';
 const SK = () => 'gt3_' + new Date().toLocaleDateString('it-IT').replace(/\//g,'-');
-const HK = 'gt3_history';
 const load = () => { try{ return JSON.parse(localStorage.getItem(SK()))||{}; }catch(e){ return {}; } };
 const save = d => localStorage.setItem(SK(), JSON.stringify(d));
-const loadH = () => { try{ return JSON.parse(localStorage.getItem(HK))||[]; }catch(e){ return []; } };
-const saveH = (day, data) => {
-  const h = loadH();
-  h.unshift({ date: new Date().toLocaleDateString('it-IT'), day, data, ts: Date.now() });
-  if(h.length>40) h.pop();
-  localStorage.setItem(HK, JSON.stringify(h));
-};
-const getBest = exId => {
-  for(const e of loadH()){
-    if(e.day===currentDay && e.data[exId]){
-      const s = Object.values(e.data[exId]).filter(x=>x&&x.kg);
-      if(s.length) return s.reduce((a,b)=>parseFloat(b.kg)>parseFloat(a.kg)?b:a);
-    }
-  }
-  return null;
-};
+
+// Ultimi kg/rip usati per esercizio — SEMPRE salvati, mai cancellati, usati per l'auto-compilazione
+const LK = 'gt_last';
+const loadLast = () => { try{ return JSON.parse(localStorage.getItem(LK))||{}; }catch(e){ return {}; } };
+const saveLast = obj => localStorage.setItem(LK, JSON.stringify(obj));
+function updateLast(exId, si, kg, reps){
+  const last = loadLast(); if(!last[exId]) last[exId]={};
+  const cur = last[exId][si] || {};
+  if(kg) cur.kg = kg;
+  if(reps) cur.reps = reps;
+  last[exId][si] = cur;
+  saveLast(last);
+}
+
+// Note personali per esercizio — SEMPRE salvate, indipendenti dal giorno
+const NK = 'gt_notes';
+const loadNotes = () => { try{ return JSON.parse(localStorage.getItem(NK))||{}; }catch(e){ return {}; } };
+function saveNote(exId){
+  const notes = loadNotes();
+  const val = document.getElementById('note-'+exId)?.value || '';
+  notes[exId] = val;
+  localStorage.setItem(NK, JSON.stringify(notes));
+}
 
 // ═══ RENDER ═══
 function renderDay(dayId){
   const day = DAYS[dayId]; if(!day) return;
-  const c = document.getElementById('exs-'+dayId); if(!c) return;
-  const td = load(); c.innerHTML='';
+  const mainC = document.getElementById('exs-'+dayId);
+  const coreC = document.getElementById('core-'+dayId);
+  if(!mainC || !coreC) return;
+  const td = load();
+  const lastAll = loadLast();
+  const notesAll = loadNotes();
+  mainC.innerHTML=''; coreC.innerHTML='';
+
   day.exercises.forEach((ex,i)=>{
     const sv = td[ex.id]||{};
+    const lastEx = lastAll[ex.id]||{};
     const allDone = Object.values(sv).filter(s=>s&&s.done).length >= ex.sets;
     const skipped = sv._skipped===true;
-    const best = getBest(ex.id);
     let sh='';
     for(let s=0;s<ex.sets;s++){
-      const v=sv[s]||{}; const d=!!v.done;
+      const v=sv[s]||{}; const lv=lastEx[s]||{}; const d=!!v.done;
+      const kgVal = (v.kg!==undefined && v.kg!=='') ? v.kg : (lv.kg||'');
+      const rpVal = (v.reps!==undefined && v.reps!=='') ? v.reps : (lv.reps||'');
       sh+=`<div class="set-row" id="row-${ex.id}-${s}">
         <div class="set-num${d?' done':''}" id="snum-${ex.id}-${s}">${s+1}</div>
         <div class="set-inputs">
-          <input class="set-field${v.kg?' filled':''}" id="kg-${ex.id}-${s}" type="number" inputmode="decimal" placeholder="kg" value="${v.kg||''}" step="2.5" min="0" onchange="sf('${ex.id}',${s},'${dayId}')">
-          <input class="set-field${v.reps?' filled':''}" id="rp-${ex.id}-${s}" type="number" inputmode="numeric" placeholder="rip" value="${v.reps||''}" min="0" onchange="sf('${ex.id}',${s},'${dayId}')">
+          <input class="set-field${kgVal?' filled':''}" id="kg-${ex.id}-${s}" type="number" inputmode="decimal" placeholder="kg" value="${kgVal}" step="2.5" min="0" onchange="sf('${ex.id}',${s},'${dayId}')">
+          <input class="set-field${rpVal?' filled':''}" id="rp-${ex.id}-${s}" type="number" inputmode="numeric" placeholder="rip" value="${rpVal}" min="0" onchange="sf('${ex.id}',${s},'${dayId}')">
         </div>
         <button class="set-go${d?' done-btn':''}" onclick="md('${ex.id}',${s},'${dayId}')">${d?'↺':'✓'}</button>
       </div>`;
     }
-    const bh = best?`<div class="prev-best">Settimana scorsa: <span>${best.kg}kg × ${best.reps||'?'}rip</span></div>`:'';
     const sb = skipped?'<span class="skip-badge">NON SVOLTO</span>':'';
+    const savedNote = (notesAll[ex.id]||'').replace(/"/g,'&quot;');
     const w=document.createElement('div'); w.className='ex-wrap'; w.id='wrap-'+ex.id;
     w.innerHTML=`<div class="ex-card${i===0?' open':''}${skipped?' skipped':''}" id="card-${ex.id}" style="${allDone?'opacity:0.55':''}">
       <div class="ex-head" onclick="toggleEx('${ex.id}')">
@@ -540,18 +462,16 @@ function renderDay(dayId){
           <div class="ex-machine-box-val">${ex.machine}</div>
           <div class="ex-machine-box-alt">↩ ${ex.machineAlt}</div>
         </div>
-        <a class="ex-video-btn" href="${ex.youtube}" target="_blank" rel="noopener">
-          <div class="ex-video-play">▶</div>
-          <div class="ex-video-text"><strong>${ex.ytLabel}</strong><span>Guarda esecuzione su YouTube</span></div>
-          <div class="ex-video-arrow">›</div>
-        </a>
         <div class="ex-note-box">💡 ${ex.note}</div>
         <div class="sets-lbl">Serie — inserisci kg e rip, tocca ✓</div>
         <div class="sets-grid">${sh}</div>
-        ${bh}
+        <div class="ex-personal-note">
+          <div class="ex-personal-note-lbl">📝 Le tue note</div>
+          <textarea class="note-field" id="note-${ex.id}" placeholder="Sensazioni, aggiustamenti, promemoria..." oninput="saveNote('${ex.id}')">${savedNote}</textarea>
+        </div>
       </div>
     </div>`;
-    c.appendChild(w);
+    (ex.section==='core'?coreC:mainC).appendChild(w);
   });
 }
 
@@ -564,6 +484,7 @@ function sf(exId,si,dayId){
   if(kg!==undefined)d[exId][si].kg=kg; if(rp!==undefined)d[exId][si].reps=rp; save(d);
   if(kg)document.getElementById('kg-'+exId+'-'+si)?.classList.add('filled');
   if(rp)document.getElementById('rp-'+exId+'-'+si)?.classList.add('filled');
+  updateLast(exId,si,kg,rp);
 
   // Auto-fill: se è la prima serie, copia kg/rip nelle serie successive ancora vuote
   if(si===0){
@@ -576,17 +497,18 @@ function sf(exId,si,dayId){
         if(kg && !d[exId][s].kg){
           d[exId][s].kg = kg;
           if(kgEl){ kgEl.value = kg; kgEl.classList.add('filled'); }
+          updateLast(exId,s,kg,null);
         }
         if(rp && !d[exId][s].reps){
           d[exId][s].reps = rp;
           if(rpEl){ rpEl.value = rp; rpEl.classList.add('filled'); }
+          updateLast(exId,s,null,rp);
         }
       }
       save(d);
     }
   }
 }
-
 
 function md(exId,si,dayId){
   const d=load(); if(!d[exId])d[exId]={}; if(!d[exId][si])d[exId][si]={};
@@ -595,6 +517,7 @@ function md(exId,si,dayId){
   if(kgE?.value)d[exId][si].kg=kgE.value; if(rpE?.value)d[exId][si].reps=rpE.value;
   const was=d[exId][si].done; d[exId][si].done=!was;
   if(d[exId]._skipped)delete d[exId]._skipped; save(d);
+  if(kgE?.value || rpE?.value) updateLast(exId,si,kgE?.value,rpE?.value);
   const num=document.getElementById('snum-'+exId+'-'+si);
   const btn=document.querySelector(`#row-${exId}-${si} .set-go`);
   const card=document.getElementById('card-'+exId);
@@ -628,7 +551,7 @@ function checkEx(exId,dayId){
 function checkAllDone(dayId){
   const day=DAYS[dayId]; const d=load(); let all=true;
   for(const ex of day.exercises){for(let s=0;s<ex.sets;s++){if(!d[ex.id]?.[s]?.done){all=false;break;}}if(!all)break;}
-  if(all){ document.getElementById('done-'+dayId)?.classList.add('show'); saveH(dayId,d); }
+  if(all){ document.getElementById('done-'+dayId)?.classList.add('show'); }
 }
 
 function finishDay(dayId){
@@ -646,7 +569,7 @@ function finishDay(dayId){
       if(ne&&!ne.querySelector('.skip-badge'))ne.insertAdjacentHTML('beforeend','<span class="skip-badge">NON SVOLTO</span>');
     }
   });
-  save(d); saveH(dayId,d);
+  save(d);
   if(!skipped.length){
     document.getElementById('done-'+dayId)?.classList.add('show');
   } else {
@@ -671,33 +594,9 @@ function switchDay(id){
   currentDay=id; if(DAYS[id])renderDay(id); window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ═══ STORICO ═══
-function openStoria(){
-  const body=document.getElementById('storiaBody');
-  const h=loadH(); const dn={a:'Lunedì',b:'Mercoledì',c:'Venerdì'};
-  if(!h.length){body.innerHTML='<div class="storia-empty">Nessun allenamento ancora.<br><br>Completa la prima sessione<br>e apparirà qui! 💪</div>';return;}
-  body.innerHTML=h.map(entry=>{
-    const dd=DAYS[entry.day]; if(!dd)return '';
-    const ex=dd.exercises.map(ex=>{
-      const es=entry.data[ex.id]; if(!es)return '';
-      if(es._skipped)return `<div class="storia-ex"><div class="storia-ex-name">${ex.name.split('(')[0].trim()}</div><div class="storia-skipped">⛔ Non svolto</div></div>`;
-      const st=Object.entries(es).filter(([k])=>k!=='_skipped').map(([s,v])=>{
-        if(!v||(!v.kg&&!v.reps))return '';
-        return `<div class="storia-set">S${parseInt(s)+1} <span>${v.kg||'?'}kg×${v.reps||'?'}</span></div>`;
-      }).join('');
-      if(!st)return '';
-      return `<div class="storia-ex"><div class="storia-ex-name">${ex.name.split('(')[0].trim()}</div><div class="storia-sets">${st}</div></div>`;
-    }).join('');
-    if(!ex)return '';
-    return `<div class="storia-day"><div class="storia-day-title"><div class="storia-day-dot"></div>${entry.date} — ${dn[entry.day]||entry.day}</div>${ex}</div>`;
-  }).join('');
-  document.getElementById('storiaOverlay').classList.add('show');
-}
-function closeStoria(){ document.getElementById('storiaOverlay').classList.remove('show'); }
-
 // ═══ RESET ═══
 function resetDay(dayId){
-  if(!confirm('Azzerare tutti i dati di oggi?'))return;
+  if(!confirm('Azzerare i dati di oggi per questa giornata? (I tuoi ultimi kg/rip e le note restano comunque salvati)'))return;
   const d=load(); DAYS[dayId]?.exercises.forEach(ex=>delete d[ex.id]); save(d);
   ['done-','partial-'].forEach(p=>document.getElementById(p+dayId)?.classList.remove('show'));
   renderDay(dayId);
