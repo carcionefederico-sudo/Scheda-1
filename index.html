@@ -175,9 +175,8 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 
 <!-- TABS -->
 <div class="day-tabs">
-  <div class="day-tab active" id="tab-a" onclick="switchDay('a')" style="color:#3b6fd4;border-bottom-color:#3b6fd4">🔷 Lunedì</div>
-  <div class="day-tab" id="tab-b" onclick="switchDay('b')">🔶 Mercoledì</div>
-  <div class="day-tab" id="tab-c" onclick="switchDay('c')">🟢 Venerdì</div>
+  <div class="day-tab active" id="tab-a" onclick="switchDay('a')" style="color:#3b6fd4;border-bottom-color:#3b6fd4">🔷 Giorno A</div>
+  <div class="day-tab" id="tab-b" onclick="switchDay('b')">🔶 Giorno B</div>
   <div class="day-tab" id="tab-note" onclick="switchDay('note')">📋 Guida</div>
 </div>
 
@@ -195,12 +194,12 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 <!-- GIORNO A -->
 <div id="day-a">
   <div class="focus-card" style="background:linear-gradient(135deg,#1e3a5f18,#0f172a);border-color:#3b6fd433">
-    <div class="focus-lbl" style="color:#3b6fd4">Lunedì</div>
-    <div class="focus-title">Push — Petto, Spalle, Tricipiti</div>
-    <div class="focus-sub">Stazione fissa + drop set — zero spostamenti tra macchinari</div>
+    <div class="focus-lbl" style="color:#3b6fd4">Giorno A</div>
+    <div class="focus-title">Upper Body Completo — Petto, Schiena, Spalle</div>
+    <div class="focus-sub">Stazione fissa + drop set — focus V-taper, zero spostamenti tra macchinari</div>
     <div class="focus-meta">
-      <span class="focus-badge" style="background:#3b6fd422;color:#60a5fa">~480–560 kcal</span>
-      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 50 min</span>
+      <span class="focus-badge" style="background:#3b6fd422;color:#60a5fa">~500–580 kcal</span>
+      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 55 min</span>
     </div>
   </div>
   <div class="sec-lbl" style="color:#22d3ee;border-bottom-color:#22d3ee55">🔆 Riscaldamento — 5 min</div>
@@ -213,7 +212,7 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
   <div class="sec-body" style="border-left-color:#f43f5e">Bike o vogatore: 20 sec massimale / 20 sec recupero × 6 giri</div>
   <div class="sec-lbl" style="color:#a78bfa;border-bottom-color:#a78bfa55">🧘 Defaticamento — 5 min</div>
   <div class="sec-body" style="border-left-color:#a78bfa">Stretching petto (apertura braccia al muro), spalle e tricipiti</div>
-  <div class="complete-banner" id="done-a"><h3>🎉 Lunedì Completato!</h3><p>Ottimo lavoro. Pesi e rip salvati per la prossima volta.</p></div>
+  <div class="complete-banner" id="done-a"><h3>🎉 Giorno A Completato!</h3><p>Ottimo lavoro. Pesi e rip salvati per la prossima volta.</p></div>
   <div class="partial-banner" id="partial-a"><h3>💾 Allenamento Salvato</h3><p id="partial-a-msg"></p></div>
   <button class="finish-btn" onclick="finishDay('a')">🏁 Termina allenamento</button>
   <button class="reset-btn" onclick="resetDay('a')">↺ Azzera giornata</button>
@@ -222,8 +221,8 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
 <!-- GIORNO B -->
 <div id="day-b" style="display:none">
   <div class="focus-card" style="background:linear-gradient(135deg,#43140718,#0f172a);border-color:#c2560a33">
-    <div class="focus-lbl" style="color:#c2560a">Mercoledì</div>
-    <div class="focus-title">Legs — Gambe, Glutei, Fianchi</div>
+    <div class="focus-lbl" style="color:#c2560a">Giorno B</div>
+    <div class="focus-title">Gambe + Braccia — Glutei, Fianchi, Bicipiti/Tricipiti</div>
     <div class="focus-sub">Stazione fissa + drop set — muscoli più grandi, massimo consumo</div>
     <div class="focus-meta">
       <span class="focus-badge" style="background:#c2560a22;color:#fb923c">~520–600 kcal</span>
@@ -240,41 +239,15 @@ body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;co
   <div class="sec-body" style="border-left-color:#f43f5e">Affondi camminati o step-up, ritmo continuo senza fermarti</div>
   <div class="sec-lbl" style="color:#a78bfa;border-bottom-color:#a78bfa55">🧘 Defaticamento — 5 min</div>
   <div class="sec-body" style="border-left-color:#a78bfa">Stretching gambe, glutei, flessori dell'anca e piriforme</div>
-  <div class="complete-banner" id="done-b"><h3>🎉 Mercoledì Completato!</h3><p>Eccellente. Le gambe ti ringrazieranno.</p></div>
+  <div class="complete-banner" id="done-b"><h3>🎉 Giorno B Completato!</h3><p>Eccellente. Le gambe ti ringrazieranno.</p></div>
   <div class="partial-banner" id="partial-b"><h3>💾 Allenamento Salvato</h3><p id="partial-b-msg"></p></div>
   <button class="finish-btn" onclick="finishDay('b')">🏁 Termina allenamento</button>
   <button class="reset-btn" onclick="resetDay('b')">↺ Azzera giornata</button>
 </div>
 
-<!-- GIORNO C -->
-<div id="day-c" style="display:none">
-  <div class="focus-card" style="background:linear-gradient(135deg,#052e1618,#0f172a);border-color:#1a7a4233">
-    <div class="focus-lbl" style="color:#22c55e">Venerdì</div>
-    <div class="focus-title">Pull — Schiena, Bicipiti, Tricipiti</div>
-    <div class="focus-sub">Stazione fissa + drop set — dorso largo per il V-taper</div>
-    <div class="focus-meta">
-      <span class="focus-badge" style="background:#1a7a4222;color:#4ade80">~470–550 kcal</span>
-      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 50 min</span>
-    </div>
-  </div>
-  <div class="sec-lbl" style="color:#22d3ee;border-bottom-color:#22d3ee55">🔆 Riscaldamento — 5 min</div>
-  <div class="sec-body" style="border-left-color:#22d3ee">5 min ellittica ritmo libero + rotazioni spalle</div>
-  <div class="sec-lbl" style="color:#1a7a42;border-bottom-color:#1a7a4255">🏋️ Stazioni fisse</div>
-  <div id="exs-c"></div>
-  <div class="sec-lbl" style="color:#eab308;border-bottom-color:#eab30855">🎯 Core & Fianchi</div>
-  <div id="core-c"></div>
-  <div class="sec-lbl" style="color:#f43f5e;border-bottom-color:#f43f5e55">🔥 Finisher — 4 min</div>
-  <div class="sec-body" style="border-left-color:#f43f5e">Corda o mountain climber, ritmo continuo sostenuto</div>
-  <div class="sec-lbl" style="color:#a78bfa;border-bottom-color:#a78bfa55">🧘 Defaticamento — 5 min</div>
-  <div class="sec-body" style="border-left-color:#a78bfa">Stretching completo: dorso, bicipiti/tricipiti, fianchi e obliqui</div>
-  <div class="complete-banner" id="done-c"><h3>🎉 Venerdì Completato!</h3><p>Settimana chiusa alla grande! Buon recupero.</p></div>
-  <div class="partial-banner" id="partial-c"><h3>💾 Allenamento Salvato</h3><p id="partial-c-msg"></p></div>
-  <button class="finish-btn" onclick="finishDay('c')">🏁 Termina allenamento</button>
-  <button class="reset-btn" onclick="resetDay('c')">↺ Azzera giornata</button>
-</div>
-
 <!-- GUIDA -->
 <div id="day-note" style="display:none">
+  <div class="info-card"><div class="info-card-ico">🔄</div><div class="info-card-title">Alternanza settimanale</div><div class="info-card-body">Allenandoti 3 volte a settimana, alterna <strong>A‑B‑A</strong> una settimana e <strong>B‑A‑B</strong> la successiva, così ogni scheda viene svolta con la stessa frequenza nel tempo.</div></div>
   <div class="info-card"><div class="info-card-ico">📲</div><div class="info-card-title">Aggiungi alla Home Screen (iPhone)</div><div class="info-card-body">In Safari tocca l'icona <strong>Condividi</strong> (quadrato con freccia) → <strong>"Aggiungi a schermata Home"</strong>. L'app si installa come icona e funziona anche senza connessione.</div></div>
   <div class="info-card"><div class="info-card-ico">✅</div><div class="info-card-title">Registrare le serie</div><div class="info-card-body">Inserisci <strong>kg</strong> e <strong>rip</strong> nei campi, poi tocca il grande tasto verde <strong>✓</strong>. Il cerchio diventa verde. Tocca <strong>↺</strong> per annullare.</div></div>
   <div class="info-card"><div class="info-card-ico">🔁</div><div class="info-card-title">Auto-compilazione</div><div class="info-card-body">I kg e le rip che usi restano sempre salvati. La prossima volta che apri un esercizio, i campi si riempiono da soli con gli ultimi valori usati: vedi subito da dove eri arrivato e puoi solo confermare o correggere.</div></div>
@@ -294,87 +267,87 @@ const DAYS = {
   a: {
     accent:'#3b6fd4', light:'#dbeafe',
     exercises:[
-      { id:'a1', name:'Chest Press (piana o inclinata)', section:'main', sets:4, reps:'10-8-6-6', rest:100,
+      { id:'a1', name:'Panca Piana', section:'main', sets:5, reps:'12-10-8-6-4', rest:90,
         tag:'PETTO', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
-        machine:'Macchinario Chest Press (scegli piana o inclinata, resta lì tutto il blocco)',
-        machineAlt:'Alt: se entrambe occupate, Dip machine invertita con la stazione 3',
-        note:'⭐ Piramidale: 10-8-6-6, aumenta il carico ad ogni serie. Tra una serie e l\'altra (100 sec) fai un PLANK 30-40 sec sul posto — non ti muovi dalla macchina. Alla serie finale: DROP SET — scarica il peso del 20-30% e fai altre 10-12 rip a cedimento.' },
-      { id:'a2', name:'Shoulder Press / Military Press', section:'main', sets:4, reps:'8-10', rest:90,
+        machine:'Panca piana con bilanciere',
+        machineAlt:'Alt: Chest Press se la panca è occupata',
+        note:'⭐ Piramidale: aumenta 4-5kg totali ad ogni serie. Tra una serie e l\'altra (90 sec): PLANK 30-40 sec sul posto.' },
+      { id:'a2', name:'Trazioni', section:'main', sets:4, reps:'max', rest:120,
+        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:true,
+        machine:'Sbarra per trazioni (presa prona, larga)',
+        machineAlt:'Alt: Lat Machine presa larga se la sbarra è occupata',
+        note:'★ Buffer: arriva quasi al cedimento su ogni serie, usa la zavorra se necessario. Tra le serie (120 sec): HOLLOW HOLD 30 sec sul posto. Fondamentale per la schiena larga — contrasto visivo ai fianchi.' },
+      { id:'a3', name:'Military Press', section:'main', sets:4, reps:'6-8', rest:100,
         tag:'SPALLE', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:true,
-        machine:'Macchinario Shoulder Press seduta',
-        machineAlt:'Alt: Military Press guidata se disponibile',
-        note:'★ 4 serie da 8-10 rip. Tra le serie (90 sec): SIDE PLANK 25 sec per lato, sul posto. Spalle larghe = trucco ottico più efficace per i fianchi. Alla serie finale: drop set, scarica il peso e continua a cedimento.' },
-      { id:'a3', name:'Dip Machine (assistita)', section:'main', sets:4, reps:'8-10', rest:90,
-        tag:'PETTO/TRICIPITI', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
-        machine:'Assisted Dip Machine',
-        machineAlt:'Alt: Chest Press range ampio se dip machine occupata',
-        note:'⭐ Busto leggermente inclinato avanti = più petto. Tra le serie (90 sec): mountain climber lento 20 sec sul posto. Alla serie finale: drop set — riduci l\'assistenza (più peso reale) o aggiungi una zavorra leggera, continua a cedimento.' },
-      { id:'a4', name:'Russian Twist', section:'core', sets:3, reps:'15+15', rest:45,
-        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Corpo libero, con disco o manubrio leggero',
-        machineAlt:'Alt: cable woodchop se il cavo è libero',
-        note:'★ Lento e controllato, non usare lo slancio. Diretto su obliqui e fianchi.' },
-      { id:'a5', name:'Sit Up', section:'core', sets:3, reps:'20', rest:45,
+        machine:'Military Press con bilanciere o macchinario guidato',
+        machineAlt:'Alt: Shoulder Press seduta se disponibile',
+        note:'★ Spalle larghe = trucco ottico più efficace per i fianchi. Tra le serie (100 sec): SIDE PLANK 25 sec per lato, sul posto.' },
+      { id:'a4', name:'Dip Zavorrate', section:'main', sets:4, reps:'8-10', rest:90,
+        tag:'PETTO/TRICIPITI', tagBg:'#fce7f3', tagColor:'#9d174d', priority:false,
+        machine:'Parallele per dip + zavorra',
+        machineAlt:'Alt: Assisted Dip Machine se le parallele sono occupate',
+        note:'Movimenti lenti e controllati, busto leggermente inclinato avanti = più petto. Tra le serie (90 sec): WALL SIT 30 sec sul posto.' },
+      { id:'a5', name:'Rematore Bilanciere / Australian Pull Up', section:'main', sets:4, reps:'8-10', rest:90,
+        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:false,
+        machine:'Bilanciere per rematore o sbarra bassa per Australian pull up',
+        machineAlt:'Alt: alterna le due varianti in base a cosa è libero',
+        note:'Presa poco più larga delle spalle (2cm per lato). Tra le serie (90 sec): PLANK 30 sec sul posto.' },
+      { id:'a6', name:'Alzate Laterali', section:'main', sets:3, reps:'10+10', rest:60,
+        tag:'SPALLE', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:false,
+        machine:'Manubri, zona rastrelliera pesi liberi',
+        machineAlt:'Alt: cavo laterale se disponibile',
+        note:'Stripping: scala di 2kg a manubrio per la seconda serie. Tra le serie (60 sec): SIDE PLANK 20 sec per lato.' },
+      { id:'a7', name:'Sit Up', section:'core', sets:3, reps:'20', rest:60,
         tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:false,
         machine:'Corpo libero a terra',
         machineAlt:'Alt: Ab Crunch Machine se preferisci',
         note:'Ritmo controllato, non strappare col collo.' },
+      { id:'a8', name:'Plank', section:'core', sets:3, reps:'1 min', rest:60,
+        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
+        machine:'Corpo libero a terra',
+        machineAlt:'Alt: plank sugli avambracci se il polso fa male',
+        note:'★ Bacino stabile, non farlo cadere né alzare troppo.' },
     ]
   },
   b: {
     accent:'#c2560a', light:'#ffedd5',
     exercises:[
-      { id:'b1', name:'Squat o Leg Press 45°', section:'main', sets:4, reps:'12-10-8-6', rest:110,
+      { id:'b1', name:'Squat', section:'main', sets:5, reps:'12-10-8-6-4', rest:90,
         tag:'GAMBE/GLUTEI', tagBg:'#fef3c7', tagColor:'#92400e', priority:true,
-        machine:'Leg Press 45° (piattaforma inclinata) o Squat libero',
-        machineAlt:'Alt: Hack Squat guidato se disponibile',
-        note:'★ Piramidale 12-10-8-6, carico crescente. Tra le serie (110 sec): HOLLOW HOLD 30 sec sul posto. Piedi alti e larghi = più glutei. Alla serie finale: drop set, scarica peso, 12-15 rip a cedimento.' },
-      { id:'b2', name:'Leg Curl', section:'main', sets:3, reps:'10-12', rest:75,
+        machine:'Squat con bilanciere o Hack Squat guidato',
+        machineAlt:'Alt: Leg Press 45° se lo squat rack è occupato',
+        note:'⭐ Piramidale: aumenta 8-10kg totali ad ogni serie. Tra le serie (90 sec): HOLLOW HOLD 30 sec sul posto.' },
+      { id:'b2', name:'Pressa 45° / Affondi Posteriori', section:'main', sets:3, reps:'10-12', rest:90,
         tag:'GAMBE', tagBg:'#ffedd5', tagColor:'#9a3412', priority:false,
-        machine:'Leg Curl seduto o sdraiato',
-        machineAlt:'Alt: Romanian Deadlift con manubri se preferisci',
-        note:'Fletti lentamente, controlla il ritorno. Tra le serie (75 sec): WALL SIT 30 sec sul posto. Alla serie finale: drop set leggero.' },
-      { id:'b3', name:'Leg Extension', section:'main', sets:3, reps:'10-12', rest:75,
+        machine:'Leg Press 45° (piattaforma inclinata)',
+        machineAlt:'Alt: Affondi posteriori a corpo libero/manubri se la pressa è occupata',
+        note:'Alterna le due varianti in base alla disponibilità. Tra le serie (90 sec): WALL SIT 30 sec sul posto.' },
+      { id:'b3', name:'Leg Curl + Leg Extension', section:'main', sets:3, reps:'10-12', rest:60,
         tag:'GAMBE', tagBg:'#ffedd5', tagColor:'#9a3412', priority:false,
-        machine:'Leg Extension (macchinario quadricipiti)',
-        machineAlt:'Alt: Leg Press piedi medi',
-        note:'Tra le serie (75 sec): CALF RAISE a corpo libero 15-20 rip sul bordo della pedana, senza spostarti. Alla serie finale: drop set.' },
-      { id:'b4', name:'Plank con toccata spalla', section:'core', sets:3, reps:'40 sec', rest:45,
-        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Corpo libero a terra',
-        machineAlt:'Alt: plank statico se preferisci',
-        note:'★ Bacino stabile, non ruotare mentre tocchi la spalla — anti-rotazione, lavora sui fianchi.' },
-      { id:'b5', name:'Side Plank con abduzione', section:'core', sets:3, reps:'12 per lato', rest:45,
-        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Corpo libero a terra',
-        machineAlt:'Alt: side plank statico se stanco',
-        note:'★ Alza e abbassa la gamba superiore mantenendo il bacino alto. Diretto su obliqui e fianco esterno.' },
-    ]
-  },
-  c: {
-    accent:'#1a7a42', light:'#dcfce7',
-    exercises:[
-      { id:'c1', name:'Lat Machine', section:'main', sets:4, reps:'10-8-6-6', rest:100,
+        machine:'Leg Curl e Leg Extension, stessa zona macchinari gambe',
+        machineAlt:'Alt: Romanian Deadlift con manubri per il curl se occupato',
+        note:'Movimenti lenti e controllati su entrambi, senza spostarti dalla zona. Tra le serie (60 sec): CALF RAISE 15-20 rip sul posto.' },
+      { id:'b4', name:'Lat Machine', section:'main', sets:4, reps:'10', rest:90,
         tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:true,
         machine:'Lat Machine cavo alto, presa larga prona',
         machineAlt:'Alt: presa neutra o stretta se la larga è scomoda',
-        note:'⭐ Piramidale 10-8-6-6. Tira verso il petto, non il mento. Tra le serie (100 sec): PLANK 40 sec sul posto. Fondamentale per la schiena larga — contrasto visivo ai fianchi. Alla serie finale: drop set.' },
-      { id:'c2', name:'Cable Row o Pulley basso', section:'main', sets:4, reps:'8-10', rest:90,
-        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:true,
-        machine:'Low Pulley / Row Machine (cavo basso seduto)',
-        machineAlt:'Alt: Rematore T-bar se disponibile',
-        note:'Tira verso l\'ombelico, gomiti vicini ai fianchi. Tra le serie (90 sec): SIDE PLANK 25 sec per lato. Alla serie finale: drop set.' },
-      { id:'c3', name:'Curl bicipiti + French Press', section:'main', sets:3, reps:'10-12', rest:60,
+        note:'★ Tira verso il petto, non il mento. Tra le serie (90 sec): PLANK 30 sec sul posto.' },
+      { id:'b5', name:'Spinte Manubri da Seduto', section:'main', sets:3, reps:'10-12', rest:90,
+        tag:'SPALLE', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:false,
+        machine:'Panca regolabile + manubri',
+        machineAlt:'Alt: Shoulder Press macchinario se la panca è occupata',
+        note:'Tra le serie (90 sec): SIDE PLANK 20 sec per lato.' },
+      { id:'b6', name:'Curl Manubri + French Press', section:'main', sets:3, reps:'10-12', rest:60,
         tag:'BRACCIA', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:false,
         machine:'Manubri o cavo, zona rastrelliera pesi liberi',
         machineAlt:'Alt: macchinario curl/tricipiti se disponibile',
-        note:'Curl e French Press nella stessa zona, senza spostarti. Tra le serie (60 sec): hold isometrico a metà curl 15 sec. Alla serie finale: drop set su entrambi.' },
-      { id:'c4', name:'Sit Up', section:'core', sets:3, reps:'20', rest:45,
-        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:false,
-        machine:'Corpo libero a terra',
-        machineAlt:'Alt: Ab Crunch Machine',
-        note:'Ritmo controllato, contrazione 1 sec in cima.' },
-      { id:'c5', name:'Side Plank', section:'core', sets:3, reps:'30 sec per lato', rest:45,
+        note:'Curl e French Press nella stessa zona, senza spostarti. Tra le serie (60 sec): hold isometrico a metà curl 15 sec.' },
+      { id:'b7', name:'Russian Twist', section:'core', sets:3, reps:'15+15', rest:45,
+        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
+        machine:'Corpo libero, con disco o manubrio leggero',
+        machineAlt:'Alt: cable woodchop se il cavo è libero',
+        note:'★ Lento e controllato, non usare lo slancio. Diretto su obliqui e fianchi.' },
+      { id:'b8', name:'Side Plank', section:'core', sets:3, reps:'30 sec per lato', rest:45,
         tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
         machine:'Corpo libero a terra',
         machineAlt:'Alt: side plank con ginocchio a terra se serve',
@@ -386,7 +359,7 @@ const DAYS = {
 // ═══ STORAGE ═══
 // Dati "di oggi" (serie fatte/non fatte) — chiave per data, si azzera naturalmente ogni giorno
 let currentDay = 'a';
-const SK = () => 'gt3_' + new Date().toLocaleDateString('it-IT').replace(/\//g,'-');
+const SK = () => 'gt2_' + new Date().toLocaleDateString('it-IT').replace(/\//g,'-');
 const load = () => { try{ return JSON.parse(localStorage.getItem(SK()))||{}; }catch(e){ return {}; } };
 const save = d => localStorage.setItem(SK(), JSON.stringify(d));
 
@@ -584,9 +557,9 @@ function finishDay(dayId){
 }
 
 // ═══ DAY SWITCH ═══
-const ACC={a:'#3b6fd4',b:'#c2560a',c:'#1a7a42',note:'#ca8a04'};
+const ACC={a:'#3b6fd4',b:'#c2560a',note:'#ca8a04'};
 function switchDay(id){
-  ['a','b','c','note'].forEach(d=>{
+  ['a','b','note'].forEach(d=>{
     const el=document.getElementById('day-'+d); if(el)el.style.display=d===id?'block':'none';
     const t=document.getElementById('tab-'+d);
     if(t){t.classList.toggle('active',d===id);t.style.color=d===id?ACC[d]:'';t.style.borderBottomColor=d===id?ACC[d]:'transparent';}
