@@ -2,595 +2,533 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Scheda GT">
-<meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.svg">
-<title>Scheda GreenTheory</title>
-
-<!-- ═══════════════════════════════════════════
-     COME MODIFICARE LA SCHEDA
-     ═══════════════════════════════════════════
-     Tutti i dati degli esercizi sono nella sezione
-     "DATI ESERCIZI" nello <script> in fondo.
-
-     Ogni esercizio ha questi campi modificabili:
-       name    → nome visualizzato
-       section → 'main' (stazione principale) o 'core' (core/fianchi dedicato)
-       sets    → numero di serie (numero)
-       reps    → ripetizioni/schema (testo, es. "8-10" o "12-10-8-6")
-       rest    → secondi di recupero (numero, non usato ma utile come nota)
-       priority → true = stella ★, false = normale
-       machine → nome macchinario principale
-       machineAlt → alternativa se occupato
-       note    → istruzioni tecniche + recupero + riempimento + drop set
-
-     Kg/rip inseriti si salvano SEMPRE (anche da un giorno all'altro):
-     la volta successiva i campi si auto-compilano con gli ultimi
-     valori usati, così vedi subito da dove ripartire.
-
-     Ogni esercizio ha anche una sezione note personali libere,
-     sempre salvata, indipendente dal giorno.
-
-     Per chiedere modifiche scrivi a Claude:
-     "Giorno A, esercizio 2: cambia sets a 4, reps a 8-10"
-     oppure
-     "Aggiungi al Giorno B un esercizio: Leg Extension, 3 serie, 15 rip"
-═══════════════════════════════════════════ -->
-
+<meta name="apple-mobile-web-app-title" content="Scheda">
+<title>Scheda Palestra — Push/Pull/Legs</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{overflow-x:hidden;width:100%}
-body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#0f172a;color:#f8fafc;min-height:100vh;overscroll-behavior:none;overflow-x:hidden;width:100%;max-width:100vw}
+  :root{
+    --bg:#0f1115;
+    --card:#171a21;
+    --card2:#1e222b;
+    --text:#eef0f4;
+    --muted:#8b91a0;
+    --border:#2a2f3a;
 
-/* HEADER */
-.hdr{background:linear-gradient(135deg,#0f172a,#1e293b);padding:env(safe-area-inset-top,20px) 16px 14px;border-bottom:1px solid #1e293b;position:sticky;top:0;z-index:50}
-.hdr-top{display:flex;align-items:center;justify-content:space-between}
-.hdr-left{display:flex;align-items:center;gap:10px}
-.hdr-icon{width:32px;height:32px;background:#22c55e;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.hdr-title{font-size:16px;font-weight:800;letter-spacing:-0.3px;line-height:1.1}
-.hdr-gym{font-size:10px;color:#22c55e;font-weight:600}
+    --warmup:#22c1d6;      /* cyan */
+    --core:#e0b93c;        /* gold */
+    --finisher:#e0473f;    /* red */
+    --cooldown:#9b6bd6;    /* purple */
 
-/* TABS */
-.day-tabs{display:flex;background:#0f172a;padding:0 12px;border-bottom:1px solid #1e293b;overflow-x:auto;scrollbar-width:none;gap:2px}
-.day-tabs::-webkit-scrollbar{display:none}
-.day-tab{flex-shrink:0;padding:11px 14px 9px;border:none;background:transparent;color:#475569;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all 0.2s}
-.day-tab.active{color:#fff}
+    --push:#e2793d;        /* accent giorno A */
+    --pull:#3ddc84;        /* accent giorno B */
+    --legs:#4f8ef7;        /* accent giorno C */
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    -webkit-tap-highlight-color:transparent;
+  }
+  header{
+    padding:18px 16px 12px;
+    position:sticky; top:0; z-index:10;
+    background:linear-gradient(180deg, var(--bg) 70%, transparent);
+  }
+  h1{font-size:19px; margin:0 0 2px; letter-spacing:.2px;}
+  .sub{color:var(--muted); font-size:13px;}
 
-/* CONTENT */
-.content{max-width:640px;margin:0 auto;padding:14px 12px 120px}
+  .tabs{
+    display:flex; gap:8px; padding:10px 16px 4px;
+    overflow-x:auto;
+  }
+  .tab{
+    flex:1; text-align:center;
+    padding:10px 6px; border-radius:12px;
+    background:var(--card); border:1px solid var(--border);
+    font-weight:600; font-size:14px; color:var(--muted);
+    cursor:pointer; user-select:none; transition:.15s;
+  }
+  .tab small{display:block; font-weight:400; font-size:11px; margin-top:2px;}
+  .tab.active{color:#0f1115;}
+  .tab[data-day="A"].active{background:var(--push); border-color:var(--push);}
+  .tab[data-day="B"].active{background:var(--pull); border-color:var(--pull);}
+  .tab[data-day="C"].active{background:var(--legs); border-color:var(--legs);}
 
-/* FOCUS CARD */
-.focus-card{border-radius:14px;padding:14px 16px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.07)}
-.focus-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;margin-bottom:3px;opacity:0.65}
-.focus-title{font-size:16px;font-weight:800;margin-bottom:3px;line-height:1.2}
-.focus-sub{font-size:12px;opacity:0.55;line-height:1.4}
-.focus-meta{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.focus-badge{border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700}
+  main{padding:14px 16px 100px;}
 
-/* SECTION — colore diverso per tipo di sezione, per distinguerle a colpo d'occhio */
-.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;margin:16px 0 7px;padding-bottom:4px;border-bottom:1.5px solid #1e293b}
-.sec-body{font-size:13px;color:#94a3b8;line-height:1.6;background:#1e293b;border-radius:10px;padding:12px 14px;margin-bottom:4px;border-left:3px solid #334155}
+  .guide{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:14px; margin-bottom:16px;
+    font-size:13px; color:var(--muted); line-height:1.5;
+  }
+  .guide strong{color:var(--text);}
+  .guide summary{cursor:pointer; color:var(--text); font-weight:600; font-size:14px;}
 
-/* EXERCISE CARD */
-.ex-wrap{margin-bottom:10px}
-.ex-card{border-radius:12px;overflow:hidden;border:1px solid #1e293b;transition:opacity 0.3s}
-.ex-card.skipped{opacity:0.4;border-color:#7f1d1d55}
-.ex-card.skipped .ex-head{background:#180808}
-.ex-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#1e293b;cursor:pointer;user-select:none;-webkit-user-select:none}
-.ex-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
-.ex-info{flex:1;min-width:0}
-.ex-name{font-size:13px;font-weight:700;line-height:1.3;display:flex;align-items:center;flex-wrap:wrap;gap:5px}
-.ex-machine-tag{font-size:10px;color:#22c55e;font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ex-meta{font-size:10px;color:#64748b;margin-top:2px}
-.tag{border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;margin-right:3px}
-.ex-chevron{font-size:18px;color:#475569;transition:transform 0.2s;flex-shrink:0;line-height:1}
-.ex-card.open .ex-chevron{transform:rotate(180deg)}
-.ex-body{background:#161f2e;display:none;padding:0 14px 14px;min-width:0;width:100%}
-.ex-card.open .ex-body{display:block}
-.ex-card{min-width:0;width:100%}
+  .section{margin-bottom:18px;}
+  .section-title{
+    display:flex; align-items:center; gap:8px;
+    font-size:12px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.6px; margin:0 0 8px 4px;
+  }
+  .dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .dot.warmup{background:var(--warmup);}
+  .dot.core{background:var(--core);}
+  .dot.finisher{background:var(--finisher);}
+  .dot.cooldown{background:var(--cooldown);}
+  .dot.push{background:var(--push);}
+  .dot.pull{background:var(--pull);}
+  .dot.legs{background:var(--legs);}
 
-/* MACHINE BOX */
-.ex-machine-box{background:#0c1520;border:1px solid #22c55e22;border-left:3px solid #22c55e;border-radius:8px;padding:9px 11px;margin:10px 0 8px}
-.ex-machine-box-lbl{font-size:9px;color:#22c55e;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;margin-bottom:2px}
-.ex-machine-box-val{font-size:12px;color:#e2e8f0;font-weight:600;line-height:1.4}
-.ex-machine-box-alt{font-size:11px;color:#475569;margin-top:3px}
+  .card{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:14px; margin-bottom:10px;
+  }
+  .card.warmup{border-left:3px solid var(--warmup);}
+  .card.core{border-left:3px solid var(--core);}
+  .card.finisher{border-left:3px solid var(--finisher);}
+  .card.cooldown{border-left:3px solid var(--cooldown);}
+  .card.mainA{border-left:3px solid var(--push);}
+  .card.mainB{border-left:3px solid var(--pull);}
+  .card.mainC{border-left:3px solid var(--legs);}
 
-/* NOTE TECNICA */
-.ex-note-box{font-size:11px;color:#64748b;line-height:1.6;padding:8px 0 4px;border-bottom:1px solid #1e293b;margin-bottom:10px}
+  .ex-name{font-size:15px; font-weight:600; margin:0 0 2px;}
+  .ex-target{color:var(--muted); font-size:12.5px; margin-bottom:10px;}
 
-/* NOTE PERSONALI — sempre salvate, indipendenti dal giorno */
-.ex-personal-note{margin-top:2px;margin-bottom:12px}
-.ex-personal-note-lbl{font-size:9px;color:#a78bfa;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;margin-bottom:5px}
-.note-field{width:100%;min-height:44px;background:#0f172a;border:1.5px solid #334155;border-left:3px solid #a78bfa;border-radius:8px;padding:8px 10px;color:#f8fafc;font-size:12px;font-family:inherit;resize:vertical;line-height:1.4}
-.note-field:focus{outline:none;border-color:#a78bfa}
-.note-field::placeholder{color:#334155}
+  .row{display:flex; gap:8px; align-items:center; margin-bottom:8px;}
+  .field{
+    flex:1; background:var(--card2); border:1px solid var(--border);
+    border-radius:10px; padding:8px 10px;
+  }
+  .field label{display:block; font-size:10.5px; color:var(--muted); margin-bottom:2px;}
+  .field input{
+    width:100%; background:transparent; border:none; color:var(--text);
+    font-size:16px; font-weight:600; outline:none;
+  }
+  .field input::placeholder{color:#565c6b; font-weight:400;}
 
-/* SETS */
-.sets-lbl{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;font-weight:600}
-.sets-grid{display:flex;flex-direction:column;gap:8px;min-width:0;width:100%}
-.set-row{display:flex;align-items:center;gap:6px;min-width:0;width:100%}
-.set-num{width:24px;height:24px;border-radius:50%;border:2px solid #334155;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#64748b;flex-shrink:0;transition:all 0.2s}
-.set-num.done{background:#22c55e;border-color:#22c55e;color:#fff}
-.set-inputs{display:flex;gap:5px;flex:1 1 auto;min-width:0}
-.set-field{flex:1 1 0%;width:0;background:#0f172a;border:1.5px solid #334155;border-radius:8px;padding:7px 2px;color:#f8fafc;font-size:13px;font-family:inherit;text-align:center;-webkit-appearance:none;transition:border-color 0.2s;min-width:0}
-.set-field:focus{outline:none;border-color:#60a5fa}
-.set-field::placeholder{color:#2d3f55;font-size:9px}
-.set-field.filled{border-color:#22c55e55;color:#22c55e}
-/* ✓ BUTTON — compact for iPhone portrait */
-.set-go{background:#22c55e;border:none;border-radius:8px;width:32px;height:32px;font-size:14px;font-weight:900;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;color:#fff;letter-spacing:-1px;padding:0}
-.set-go:active{transform:scale(0.9);background:#16a34a}
-.set-go.done-btn{background:#1e293b;color:#475569;font-size:12px}
+  .setcheck{display:flex; gap:6px; margin-top:4px;}
+  .setbox{
+    flex:1; height:32px; border-radius:8px; border:1px solid var(--border);
+    background:var(--card2); color:var(--muted); font-size:12px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-weight:600; transition:.12s;
+  }
+  .setbox.done{background:var(--pull); color:#0f1115; border-color:var(--pull);}
 
-/* BANNERS */
-.complete-banner{background:linear-gradient(135deg,#14532d,#166534);border-radius:14px;padding:18px;margin-top:16px;text-align:center;display:none;border:1px solid #22c55e33}
-.complete-banner.show{display:block}
-.complete-banner h3{font-size:20px;font-weight:800;margin-bottom:4px}
-.complete-banner p{font-size:13px;color:#bbf7d0;opacity:0.85}
-.partial-banner{background:linear-gradient(135deg,#78350f,#92400e);border-radius:14px;padding:18px;margin-top:16px;text-align:center;display:none;border:1px solid #f59e0b33}
-.partial-banner.show{display:block}
-.partial-banner h3{font-size:17px;font-weight:800;margin-bottom:5px}
-.partial-banner p{font-size:12px;color:#fde68a;line-height:1.5}
+  textarea.note{
+    width:100%; margin-top:8px; background:var(--card2); border:1px solid var(--border);
+    border-radius:10px; padding:8px 10px; color:var(--text); font-size:13px;
+    resize:vertical; min-height:34px; font-family:inherit;
+  }
 
-/* BUTTONS */
-.finish-btn{display:block;width:100%;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border:none;color:#fff;border-radius:14px;padding:17px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:16px;text-align:center;letter-spacing:0.02em;-webkit-tap-highlight-color:transparent}
-.finish-btn:active{transform:scale(0.98);background:#1e40af}
-.reset-btn{display:block;width:100%;background:transparent;border:1px solid #1e293b;color:#334155;border-radius:10px;padding:12px;font-size:13px;font-family:inherit;cursor:pointer;margin-top:8px;text-align:center}
-.reset-btn:active{background:#1e293b}
+  .rest-tag{
+    display:inline-block; margin-top:8px; font-size:11.5px; color:var(--muted);
+    background:var(--card2); border:1px solid var(--border); border-radius:20px;
+    padding:3px 10px;
+  }
 
-/* INFO CARDS (Guide) */
-.info-card{background:#1e293b;border-radius:14px;padding:14px 16px;margin-bottom:10px}
-.info-card-ico{font-size:20px;margin-bottom:6px}
-.info-card-title{font-size:13px;font-weight:700;margin-bottom:5px}
-.info-card-body{font-size:13px;color:#94a3b8;line-height:1.6}
+  .station-note{
+    font-size:12px; color:var(--muted); background:var(--card2);
+    border:1px dashed var(--border); border-radius:10px; padding:8px 10px; margin-bottom:10px;
+  }
 
-/* SKIP BADGE */
-.skip-badge{font-size:9px;background:#7f1d1d;color:#fca5a5;border-radius:4px;padding:2px 5px;font-weight:700;white-space:nowrap}
-
-/* INSTALL BANNER */
-.install-banner{background:#1e3a5f;border:1px solid #3b6fd433;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:none}
-.install-banner.show{display:flex;gap:12px;align-items:flex-start}
-.install-banner-text{flex:1;font-size:12px;color:#93c5fd;line-height:1.5}
-.install-banner-text strong{display:block;font-size:13px;color:#bfdbfe;margin-bottom:3px}
-.install-close{background:none;border:none;color:#475569;font-size:18px;cursor:pointer;padding:0;flex-shrink:0;line-height:1}
+  footer{
+    position:fixed; bottom:0; left:0; right:0;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(0deg, var(--bg) 75%, transparent);
+    display:flex; gap:10px;
+  }
+  .btn{
+    flex:1; text-align:center; padding:12px; border-radius:12px;
+    font-weight:700; font-size:14px; border:1px solid var(--border);
+    background:var(--card); color:var(--text); cursor:pointer;
+  }
+  .btn.reset{color:var(--finisher); border-color:#4a2222;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="hdr">
-  <div class="hdr-top">
-    <div class="hdr-left">
-      <div class="hdr-icon">🏋️</div>
-      <div>
-        <div class="hdr-title">Scheda Tracker</div>
-        <div class="hdr-gym">📍 GreenTheory Osmannoro</div>
-      </div>
+<header>
+  <h1>Scheda Palestra</h1>
+  <div class="sub">Split Push / Pull / Legs — 3 giorni · ~60 min · obiettivo ipertrofia</div>
+</header>
+
+<div class="tabs" id="tabs">
+  <div class="tab" data-day="A"><span>Giorno A</span><small>Push</small></div>
+  <div class="tab" data-day="B"><span>Giorno B</span><small>Pull</small></div>
+  <div class="tab" data-day="C"><span>Giorno C</span><small>Legs</small></div>
+</div>
+
+<main>
+  <details class="guide" id="guideCard">
+    <summary>Come funziona questa scheda</summary>
+    <div style="margin-top:8px;">
+      <strong>Rotazione settimanale:</strong> alterna A → B → C ad ogni sessione, senza fermarti al lunedì.
+      Con 3 allenamenti/settimana la sequenza si sfasa da sola (es. sett.1 A-B-C, sett.2 A-B-C ma partendo
+      da giorni diversi), così ogni gruppo muscolare riceve comunque ~2 stimoli ogni 2 settimane in modo
+      distribuito, mai con più di 5-6 giorni di distanza tra due sedute dello stesso giorno.<br><br>
+      <strong>Stazione fissa:</strong> ogni giorno ruota attorno a 2-3 macchine "ancora" (evidenziate).
+      Durante il recupero tra le serie, se la macchina è libera resta lì; se c'è coda, riempi il tempo con
+      l'isometria indicata invece di spostarti — mantieni la frequenza cardiaca alta senza perdere la
+      postazione.<br><br>
+      <strong>Progressione:</strong> quando completi tutte le serie al top del range di ripetizioni, la
+      sessione successiva aumenta il carico e riparti dal minimo del range.
     </div>
-  </div>
-</div>
+  </details>
 
-<!-- TABS -->
-<div class="day-tabs">
-  <div class="day-tab active" id="tab-a" onclick="switchDay('a')" style="color:#3b6fd4;border-bottom-color:#3b6fd4">🔷 Giorno A</div>
-  <div class="day-tab" id="tab-b" onclick="switchDay('b')">🔶 Giorno B</div>
-  <div class="day-tab" id="tab-note" onclick="switchDay('note')">📋 Guida</div>
-</div>
+  <div id="dayContainer"></div>
+</main>
 
-<div class="content">
-
-<!-- INSTALL PROMPT -->
-<div class="install-banner" id="installBanner">
-  <div class="install-banner-text">
-    <strong>📲 Aggiungi alla Home Screen</strong>
-    Tocca <strong>Condividi</strong> in Safari → <strong>"Aggiungi a Home"</strong> per usarla come app, anche offline.
-  </div>
-  <button class="install-close" onclick="document.getElementById('installBanner').classList.remove('show');localStorage.setItem('gt_install_dismissed','1')">✕</button>
-</div>
-
-<!-- GIORNO A -->
-<div id="day-a">
-  <div class="focus-card" style="background:linear-gradient(135deg,#1e3a5f18,#0f172a);border-color:#3b6fd433">
-    <div class="focus-lbl" style="color:#3b6fd4">Giorno A</div>
-    <div class="focus-title">Upper Body Completo — Petto, Schiena, Spalle</div>
-    <div class="focus-sub">Stazione fissa + drop set — focus V-taper, zero spostamenti tra macchinari</div>
-    <div class="focus-meta">
-      <span class="focus-badge" style="background:#3b6fd422;color:#60a5fa">~500–580 kcal</span>
-      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 55 min</span>
-    </div>
-  </div>
-  <div class="sec-lbl" style="color:#22d3ee;border-bottom-color:#22d3ee55">🔆 Riscaldamento — 5 min</div>
-  <div class="sec-body" style="border-left-color:#22d3ee">5 min ellittica o tapis roulant 6–7 km/h + rotazioni spalle a vuoto</div>
-  <div class="sec-lbl" style="color:#3b6fd4;border-bottom-color:#3b6fd455">🏋️ Stazioni fisse</div>
-  <div id="exs-a"></div>
-  <div class="sec-lbl" style="color:#eab308;border-bottom-color:#eab30855">🎯 Core & Fianchi</div>
-  <div id="core-a"></div>
-  <div class="sec-lbl" style="color:#f43f5e;border-bottom-color:#f43f5e55">🔥 Finisher — 4 min</div>
-  <div class="sec-body" style="border-left-color:#f43f5e">Bike o vogatore: 20 sec massimale / 20 sec recupero × 6 giri</div>
-  <div class="sec-lbl" style="color:#a78bfa;border-bottom-color:#a78bfa55">🧘 Defaticamento — 5 min</div>
-  <div class="sec-body" style="border-left-color:#a78bfa">Stretching petto (apertura braccia al muro), spalle e tricipiti</div>
-  <div class="complete-banner" id="done-a"><h3>🎉 Giorno A Completato!</h3><p>Ottimo lavoro. Pesi e rip salvati per la prossima volta.</p></div>
-  <div class="partial-banner" id="partial-a"><h3>💾 Allenamento Salvato</h3><p id="partial-a-msg"></p></div>
-  <button class="finish-btn" onclick="finishDay('a')">🏁 Termina allenamento</button>
-  <button class="reset-btn" onclick="resetDay('a')">↺ Azzera giornata</button>
-</div>
-
-<!-- GIORNO B -->
-<div id="day-b" style="display:none">
-  <div class="focus-card" style="background:linear-gradient(135deg,#43140718,#0f172a);border-color:#c2560a33">
-    <div class="focus-lbl" style="color:#c2560a">Giorno B</div>
-    <div class="focus-title">Gambe + Braccia — Glutei, Fianchi, Bicipiti/Tricipiti</div>
-    <div class="focus-sub">Stazione fissa + drop set — muscoli più grandi, massimo consumo</div>
-    <div class="focus-meta">
-      <span class="focus-badge" style="background:#c2560a22;color:#fb923c">~520–600 kcal</span>
-      <span class="focus-badge" style="background:#1e293b;color:#64748b">⏱ 50 min</span>
-    </div>
-  </div>
-  <div class="sec-lbl" style="color:#22d3ee;border-bottom-color:#22d3ee55">🔆 Riscaldamento — 5 min</div>
-  <div class="sec-body" style="border-left-color:#22d3ee">5 min cyclette resistenza medio-alta — attiva gambe e glutei</div>
-  <div class="sec-lbl" style="color:#c2560a;border-bottom-color:#c2560a55">🏋️ Stazioni fisse</div>
-  <div id="exs-b"></div>
-  <div class="sec-lbl" style="color:#eab308;border-bottom-color:#eab30855">🎯 Core & Fianchi</div>
-  <div id="core-b"></div>
-  <div class="sec-lbl" style="color:#f43f5e;border-bottom-color:#f43f5e55">🔥 Finisher — 4 min</div>
-  <div class="sec-body" style="border-left-color:#f43f5e">Affondi camminati o step-up, ritmo continuo senza fermarti</div>
-  <div class="sec-lbl" style="color:#a78bfa;border-bottom-color:#a78bfa55">🧘 Defaticamento — 5 min</div>
-  <div class="sec-body" style="border-left-color:#a78bfa">Stretching gambe, glutei, flessori dell'anca e piriforme</div>
-  <div class="complete-banner" id="done-b"><h3>🎉 Giorno B Completato!</h3><p>Eccellente. Le gambe ti ringrazieranno.</p></div>
-  <div class="partial-banner" id="partial-b"><h3>💾 Allenamento Salvato</h3><p id="partial-b-msg"></p></div>
-  <button class="finish-btn" onclick="finishDay('b')">🏁 Termina allenamento</button>
-  <button class="reset-btn" onclick="resetDay('b')">↺ Azzera giornata</button>
-</div>
-
-<!-- GUIDA -->
-<div id="day-note" style="display:none">
-  <div class="info-card"><div class="info-card-ico">🔄</div><div class="info-card-title">Alternanza settimanale</div><div class="info-card-body">Allenandoti 3 volte a settimana, alterna <strong>A‑B‑A</strong> una settimana e <strong>B‑A‑B</strong> la successiva, così ogni scheda viene svolta con la stessa frequenza nel tempo.</div></div>
-  <div class="info-card"><div class="info-card-ico">📲</div><div class="info-card-title">Aggiungi alla Home Screen (iPhone)</div><div class="info-card-body">In Safari tocca l'icona <strong>Condividi</strong> (quadrato con freccia) → <strong>"Aggiungi a schermata Home"</strong>. L'app si installa come icona e funziona anche senza connessione.</div></div>
-  <div class="info-card"><div class="info-card-ico">✅</div><div class="info-card-title">Registrare le serie</div><div class="info-card-body">Inserisci <strong>kg</strong> e <strong>rip</strong> nei campi, poi tocca il grande tasto verde <strong>✓</strong>. Il cerchio diventa verde. Tocca <strong>↺</strong> per annullare.</div></div>
-  <div class="info-card"><div class="info-card-ico">🔁</div><div class="info-card-title">Auto-compilazione</div><div class="info-card-body">I kg e le rip che usi restano sempre salvati. La prossima volta che apri un esercizio, i campi si riempiono da soli con gli ultimi valori usati: vedi subito da dove eri arrivato e puoi solo confermare o correggere.</div></div>
-  <div class="info-card"><div class="info-card-ico">📝</div><div class="info-card-title">Note personali</div><div class="info-card-body">Sotto ogni esercizio c'è un piccolo campo <strong>note</strong> tutto tuo: scrivi sensazioni, aggiustamenti, promemoria. Resta salvato per sempre, indipendentemente dal giorno.</div></div>
-  <div class="info-card"><div class="info-card-ico">🏁</div><div class="info-card-title">Termina allenamento</div><div class="info-card-body">Premi "Termina allenamento" anche se non hai finito tutto. Gli esercizi non completati vengono segnati come non svolti, ma i dati inseriti restano comunque salvati.</div></div>
-  <div class="info-card"><div class="info-card-ico">✏️</div><div class="info-card-title">Modificare la scheda</div><div class="info-card-body">Scrivi a Claude con la descrizione della modifica:<br><em>"Giorno A, esercizio 2: cambia serie a 4, rip a 8–10"</em><br><em>"Aggiungi al Giorno B: Leg Extension, 3 serie, 15 rip"</em><br>Claude aggiorna il file e te lo ridà in pochi secondi.</div></div>
-</div>
-
-</div><!-- end content -->
+<footer>
+  <div class="btn reset" id="resetBtn">Reset sessione</div>
+  <div class="btn" id="saveBtn">Salva sessione</div>
+</footer>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// DATI ESERCIZI — modifica qui per cambiare la scheda
-// Ogni campo è commentato sopra nell'header del file
-// ═══════════════════════════════════════════════════════
-const DAYS = {
-  a: {
-    accent:'#3b6fd4', light:'#dbeafe',
-    exercises:[
-      { id:'a1', name:'Panca Piana', section:'main', sets:5, reps:'12-10-8-6-4', rest:90,
-        tag:'PETTO', tagBg:'#fce7f3', tagColor:'#9d174d', priority:true,
-        machine:'Panca piana con bilanciere',
-        machineAlt:'Alt: Chest Press se la panca è occupata',
-        note:'⭐ Piramidale: aumenta 4-5kg totali ad ogni serie. Tra una serie e l\'altra (90 sec): PLANK 30-40 sec sul posto.' },
-      { id:'a2', name:'Trazioni', section:'main', sets:4, reps:'max', rest:120,
-        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:true,
-        machine:'Sbarra per trazioni (presa prona, larga)',
-        machineAlt:'Alt: Lat Machine presa larga se la sbarra è occupata',
-        note:'★ Buffer: arriva quasi al cedimento su ogni serie, usa la zavorra se necessario. Tra le serie (120 sec): HOLLOW HOLD 30 sec sul posto. Fondamentale per la schiena larga — contrasto visivo ai fianchi.' },
-      { id:'a3', name:'Military Press', section:'main', sets:4, reps:'6-8', rest:100,
-        tag:'SPALLE', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:true,
-        machine:'Military Press con bilanciere o macchinario guidato',
-        machineAlt:'Alt: Shoulder Press seduta se disponibile',
-        note:'★ Spalle larghe = trucco ottico più efficace per i fianchi. Tra le serie (100 sec): SIDE PLANK 25 sec per lato, sul posto.' },
-      { id:'a4', name:'Dip Zavorrate', section:'main', sets:4, reps:'8-10', rest:90,
-        tag:'PETTO/TRICIPITI', tagBg:'#fce7f3', tagColor:'#9d174d', priority:false,
-        machine:'Parallele per dip + zavorra',
-        machineAlt:'Alt: Assisted Dip Machine se le parallele sono occupate',
-        note:'Movimenti lenti e controllati, busto leggermente inclinato avanti = più petto. Tra le serie (90 sec): WALL SIT 30 sec sul posto.' },
-      { id:'a5', name:'Rematore Bilanciere / Australian Pull Up', section:'main', sets:4, reps:'8-10', rest:90,
-        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:false,
-        machine:'Bilanciere per rematore o sbarra bassa per Australian pull up',
-        machineAlt:'Alt: alterna le due varianti in base a cosa è libero',
-        note:'Presa poco più larga delle spalle (2cm per lato). Tra le serie (90 sec): PLANK 30 sec sul posto.' },
-      { id:'a6', name:'Alzate Laterali', section:'main', sets:3, reps:'10+10', rest:60,
-        tag:'SPALLE', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:false,
-        machine:'Manubri, zona rastrelliera pesi liberi',
-        machineAlt:'Alt: cavo laterale se disponibile',
-        note:'Stripping: scala di 2kg a manubrio per la seconda serie. Tra le serie (60 sec): SIDE PLANK 20 sec per lato.' },
-      { id:'a7', name:'Sit Up', section:'core', sets:3, reps:'20', rest:60,
-        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:false,
-        machine:'Corpo libero a terra',
-        machineAlt:'Alt: Ab Crunch Machine se preferisci',
-        note:'Ritmo controllato, non strappare col collo.' },
-      { id:'a8', name:'Plank', section:'core', sets:3, reps:'1 min', rest:60,
-        tag:'CORE', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Corpo libero a terra',
-        machineAlt:'Alt: plank sugli avambracci se il polso fa male',
-        note:'★ Bacino stabile, non farlo cadere né alzare troppo.' },
-    ]
-  },
-  b: {
-    accent:'#c2560a', light:'#ffedd5',
-    exercises:[
-      { id:'b1', name:'Squat', section:'main', sets:5, reps:'12-10-8-6-4', rest:90,
-        tag:'GAMBE/GLUTEI', tagBg:'#fef3c7', tagColor:'#92400e', priority:true,
-        machine:'Squat con bilanciere o Hack Squat guidato',
-        machineAlt:'Alt: Leg Press 45° se lo squat rack è occupato',
-        note:'⭐ Piramidale: aumenta 8-10kg totali ad ogni serie. Tra le serie (90 sec): HOLLOW HOLD 30 sec sul posto.' },
-      { id:'b2', name:'Pressa 45° / Affondi Posteriori', section:'main', sets:3, reps:'10-12', rest:90,
-        tag:'GAMBE', tagBg:'#ffedd5', tagColor:'#9a3412', priority:false,
-        machine:'Leg Press 45° (piattaforma inclinata)',
-        machineAlt:'Alt: Affondi posteriori a corpo libero/manubri se la pressa è occupata',
-        note:'Alterna le due varianti in base alla disponibilità. Tra le serie (90 sec): WALL SIT 30 sec sul posto.' },
-      { id:'b3', name:'Leg Curl + Leg Extension', section:'main', sets:3, reps:'10-12', rest:60,
-        tag:'GAMBE', tagBg:'#ffedd5', tagColor:'#9a3412', priority:false,
-        machine:'Leg Curl e Leg Extension, stessa zona macchinari gambe',
-        machineAlt:'Alt: Romanian Deadlift con manubri per il curl se occupato',
-        note:'Movimenti lenti e controllati su entrambi, senza spostarti dalla zona. Tra le serie (60 sec): CALF RAISE 15-20 rip sul posto.' },
-      { id:'b4', name:'Lat Machine', section:'main', sets:4, reps:'10', rest:90,
-        tag:'SCHIENA', tagBg:'#dbeafe', tagColor:'#1e40af', priority:true,
-        machine:'Lat Machine cavo alto, presa larga prona',
-        machineAlt:'Alt: presa neutra o stretta se la larga è scomoda',
-        note:'★ Tira verso il petto, non il mento. Tra le serie (90 sec): PLANK 30 sec sul posto.' },
-      { id:'b5', name:'Spinte Manubri da Seduto', section:'main', sets:3, reps:'10-12', rest:90,
-        tag:'SPALLE', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:false,
-        machine:'Panca regolabile + manubri',
-        machineAlt:'Alt: Shoulder Press macchinario se la panca è occupata',
-        note:'Tra le serie (90 sec): SIDE PLANK 20 sec per lato.' },
-      { id:'b6', name:'Curl Manubri + French Press', section:'main', sets:3, reps:'10-12', rest:60,
-        tag:'BRACCIA', tagBg:'#ede9fe', tagColor:'#5b21b6', priority:false,
-        machine:'Manubri o cavo, zona rastrelliera pesi liberi',
-        machineAlt:'Alt: macchinario curl/tricipiti se disponibile',
-        note:'Curl e French Press nella stessa zona, senza spostarti. Tra le serie (60 sec): hold isometrico a metà curl 15 sec.' },
-      { id:'b7', name:'Russian Twist', section:'core', sets:3, reps:'15+15', rest:45,
-        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Corpo libero, con disco o manubrio leggero',
-        machineAlt:'Alt: cable woodchop se il cavo è libero',
-        note:'★ Lento e controllato, non usare lo slancio. Diretto su obliqui e fianchi.' },
-      { id:'b8', name:'Side Plank', section:'core', sets:3, reps:'30 sec per lato', rest:45,
-        tag:'FIANCHI', tagBg:'#dcfce7', tagColor:'#166534', priority:true,
-        machine:'Corpo libero a terra',
-        machineAlt:'Alt: side plank con ginocchio a terra se serve',
-        note:'★ Bacino allineato, non farlo cadere. Tonifica il fianco esterno.' },
-    ]
-  }
-};
+(function(){
+  "use strict";
 
-// ═══ STORAGE ═══
-// Dati "di oggi" (serie fatte/non fatte) — chiave per data, si azzera naturalmente ogni giorno
-let currentDay = 'a';
-const SK = () => 'gt2_' + new Date().toLocaleDateString('it-IT').replace(/\//g,'-');
-const load = () => { try{ return JSON.parse(localStorage.getItem(SK()))||{}; }catch(e){ return {}; } };
-const save = d => localStorage.setItem(SK(), JSON.stringify(d));
+  var STORAGE_PREFIX = "gt3_"; // v3 dello schema dati: split Push/Pull/Legs
 
-// Ultimi kg/rip usati per esercizio — SEMPRE salvati, mai cancellati, usati per l'auto-compilazione
-const LK = 'gt_last';
-const loadLast = () => { try{ return JSON.parse(localStorage.getItem(LK))||{}; }catch(e){ return {}; } };
-const saveLast = obj => localStorage.setItem(LK, JSON.stringify(obj));
-function updateLast(exId, si, kg, reps){
-  const last = loadLast(); if(!last[exId]) last[exId]={};
-  const cur = last[exId][si] || {};
-  if(kg) cur.kg = kg;
-  if(reps) cur.reps = reps;
-  last[exId][si] = cur;
-  saveLast(last);
-}
-
-// Note personali per esercizio — SEMPRE salvate, indipendenti dal giorno
-const NK = 'gt_notes';
-const loadNotes = () => { try{ return JSON.parse(localStorage.getItem(NK))||{}; }catch(e){ return {}; } };
-function saveNote(exId){
-  const notes = loadNotes();
-  const val = document.getElementById('note-'+exId)?.value || '';
-  notes[exId] = val;
-  localStorage.setItem(NK, JSON.stringify(notes));
-}
-
-// ═══ RENDER ═══
-function renderDay(dayId){
-  const day = DAYS[dayId]; if(!day) return;
-  const mainC = document.getElementById('exs-'+dayId);
-  const coreC = document.getElementById('core-'+dayId);
-  if(!mainC || !coreC) return;
-  const td = load();
-  const lastAll = loadLast();
-  const notesAll = loadNotes();
-  mainC.innerHTML=''; coreC.innerHTML='';
-
-  day.exercises.forEach((ex,i)=>{
-    const sv = td[ex.id]||{};
-    const lastEx = lastAll[ex.id]||{};
-    const allDone = Object.values(sv).filter(s=>s&&s.done).length >= ex.sets;
-    const skipped = sv._skipped===true;
-    let sh='';
-    for(let s=0;s<ex.sets;s++){
-      const v=sv[s]||{}; const lv=lastEx[s]||{}; const d=!!v.done;
-      const kgVal = (v.kg!==undefined && v.kg!=='') ? v.kg : (lv.kg||'');
-      const rpVal = (v.reps!==undefined && v.reps!=='') ? v.reps : (lv.reps||'');
-      sh+=`<div class="set-row" id="row-${ex.id}-${s}">
-        <div class="set-num${d?' done':''}" id="snum-${ex.id}-${s}">${s+1}</div>
-        <div class="set-inputs">
-          <input class="set-field${kgVal?' filled':''}" id="kg-${ex.id}-${s}" type="number" inputmode="decimal" placeholder="kg" value="${kgVal}" step="2.5" min="0" onchange="sf('${ex.id}',${s},'${dayId}')">
-          <input class="set-field${rpVal?' filled':''}" id="rp-${ex.id}-${s}" type="number" inputmode="numeric" placeholder="rip" value="${rpVal}" min="0" onchange="sf('${ex.id}',${s},'${dayId}')">
-        </div>
-        <button class="set-go${d?' done-btn':''}" onclick="md('${ex.id}',${s},'${dayId}')">${d?'↺':'✓'}</button>
-      </div>`;
+  var DAYS = {
+    A: {
+      label: "Push — Petto, Spalle, Tricipiti",
+      accentClass: "mainA",
+      dotClass: "push",
+      stationNote: "Stazioni fisse del giorno: Panca piana e Military Press. Tra le serie, se libere, resta lì; altrimenti isometria a corpo libero.",
+      sections: [
+        {
+          type: "warmup",
+          title: "Riscaldamento",
+          exercises: [
+            { id:"a_warm1", name:"Mobilità spalle + rotator cuff", target:"2 min, banda elastica leggera", noWeight:true }
+          ]
+        },
+        {
+          type: "main",
+          title: "Stazioni principali",
+          exercises: [
+            { id:"a_ex1", name:"Panca piana (macchina/bilanciere)", target:"4 serie x 8-10 rip", rest:"90\" — isometria: plank" },
+            { id:"a_ex2", name:"Chest press o panca inclinata", target:"3 serie x 10-12 rip", rest:"90\" — isometria: wall sit" },
+            { id:"a_ex3", name:"Military Press", target:"3 serie x 8-10 rip", rest:"90\" — isometria: plank" }
+          ]
+        },
+        {
+          type: "main",
+          title: "Complementari",
+          exercises: [
+            { id:"a_ex4", name:"Alzate laterali", target:"3 serie x 12-15 rip", rest:"60\"" },
+            { id:"a_ex5", name:"Push down tricipiti (cavo)", target:"3 serie x 10-12 rip", rest:"60\"" },
+            { id:"a_ex6", name:"Dip su macchina o croci ai cavi", target:"2 serie x 12-15 rip (drop set finale)", rest:"60\"" }
+          ]
+        },
+        {
+          type: "core",
+          title: "Core",
+          exercises: [
+            { id:"a_core1", name:"Hollow hold", target:"3 x 30-40 sec", noWeight:true },
+            { id:"a_core2", name:"Side plank (dx/sx)", target:"2 x 20-30 sec per lato", noWeight:true }
+          ]
+        },
+        {
+          type: "cooldown",
+          title: "Defaticamento",
+          exercises: [
+            { id:"a_cool1", name:"Stretching petto, spalle, tricipiti", target:"3-4 min", noWeight:true }
+          ]
+        }
+      ]
+    },
+    B: {
+      label: "Pull — Schiena, Bicipiti",
+      accentClass: "mainB",
+      dotClass: "pull",
+      stationNote: "Stazioni fisse del giorno: Lat machine e Pulley basso. Tra le serie, se libere, resta lì; altrimenti isometria a corpo libero.",
+      sections: [
+        {
+          type: "warmup",
+          title: "Riscaldamento",
+          exercises: [
+            { id:"b_warm1", name:"Mobilità dorsale + attivazione scapole", target:"2 min, banda elastica leggera", noWeight:true }
+          ]
+        },
+        {
+          type: "main",
+          title: "Stazioni principali",
+          exercises: [
+            { id:"b_ex1", name:"Lat machine o trazioni", target:"4 serie x 8-10 rip", rest:"90\" — isometria: hollow hold" },
+            { id:"b_ex2", name:"Pulley / rematore seduto", target:"3 serie x 10-12 rip", rest:"90\" — isometria: wall sit" },
+            { id:"b_ex3", name:"Pulley basso presa larga", target:"3 serie x 10-12 rip", rest:"90\" — isometria: plank" }
+          ]
+        },
+        {
+          type: "main",
+          title: "Complementari",
+          exercises: [
+            { id:"b_ex4", name:"Alzate posteriori (reverse fly)", target:"3 serie x 12-15 rip", rest:"60\"" },
+            { id:"b_ex5", name:"Curl bicipiti (bilanciere/manubri)", target:"3 serie x 10-12 rip", rest:"60\"" },
+            { id:"b_ex6", name:"Curl a martello o cavo", target:"2 serie x 12-15 rip (drop set finale)", rest:"60\"" }
+          ]
+        },
+        {
+          type: "core",
+          title: "Core",
+          exercises: [
+            { id:"b_core1", name:"Plank", target:"3 x 40-50 sec", noWeight:true },
+            { id:"b_core2", name:"Superman hold", target:"2 x 25-30 sec", noWeight:true }
+          ]
+        },
+        {
+          type: "cooldown",
+          title: "Defaticamento",
+          exercises: [
+            { id:"b_cool1", name:"Stretching dorsali, bicipiti, avambracci", target:"3-4 min", noWeight:true }
+          ]
+        }
+      ]
+    },
+    C: {
+      label: "Legs — Gambe, Glutei, Core",
+      accentClass: "mainC",
+      dotClass: "legs",
+      stationNote: "Stazioni fisse del giorno: Leg press e Leg curl. Tra le serie, se libere, resta lì; altrimenti isometria a corpo libero.",
+      sections: [
+        {
+          type: "warmup",
+          title: "Riscaldamento",
+          exercises: [
+            { id:"c_warm1", name:"Mobilità anche + attivazione glutei", target:"2-3 min", noWeight:true }
+          ]
+        },
+        {
+          type: "main",
+          title: "Stazioni principali",
+          exercises: [
+            { id:"c_ex1", name:"Leg press o squat", target:"4 serie x 8-10 rip", rest:"120\" — isometria: wall sit" },
+            { id:"c_ex2", name:"Leg curl (femorali)", target:"3 serie x 10-12 rip", rest:"90\" — isometria: glute bridge hold" },
+            { id:"c_ex3", name:"Leg extension (quadricipiti)", target:"3 serie x 12-15 rip", rest:"90\" — isometria: plank" }
+          ]
+        },
+        {
+          type: "main",
+          title: "Complementari",
+          exercises: [
+            { id:"c_ex4", name:"Hip thrust o abductor/adductor", target:"3 serie x 12-15 rip", rest:"90\"" },
+            { id:"c_ex5", name:"Calf raise", target:"3 serie x 15-20 rip", rest:"60\"" }
+          ]
+        },
+        {
+          type: "finisher",
+          title: "Finisher",
+          exercises: [
+            { id:"c_fin1", name:"Affondi in camminata o step-up", target:"2 giri x 12 passi per gamba", rest:"45\"" }
+          ]
+        },
+        {
+          type: "core",
+          title: "Core",
+          exercises: [
+            { id:"c_core1", name:"Plank / dead bug", target:"2-3 x max tenuta", noWeight:true }
+          ]
+        },
+        {
+          type: "cooldown",
+          title: "Defaticamento",
+          exercises: [
+            { id:"c_cool1", name:"Stretching quadricipiti, femorali, glutei", target:"4-5 min", noWeight:true }
+          ]
+        }
+      ]
     }
-    const sb = skipped?'<span class="skip-badge">NON SVOLTO</span>':'';
-    const savedNote = (notesAll[ex.id]||'').replace(/"/g,'&quot;');
-    const w=document.createElement('div'); w.className='ex-wrap'; w.id='wrap-'+ex.id;
-    w.innerHTML=`<div class="ex-card${i===0?' open':''}${skipped?' skipped':''}" id="card-${ex.id}" style="${allDone?'opacity:0.55':''}">
-      <div class="ex-head" onclick="toggleEx('${ex.id}')">
-        <div class="ex-num" style="background:${ex.priority?day.accent:'#334155'};color:#fff">${i+1}</div>
-        <div class="ex-info">
-          <div class="ex-name">${ex.priority?'★ ':''}${ex.name} ${sb}</div>
-          <div class="ex-machine-tag">🟢 ${ex.machine.split('(')[0].trim()}</div>
-          <div class="ex-meta"><span class="tag" style="background:${ex.tagBg};color:${ex.tagColor}">${ex.tag}</span>${ex.sets} serie · ${ex.reps} rip</div>
-        </div>
-        <div class="ex-chevron">⌄</div>
-      </div>
-      <div class="ex-body">
-        <div class="ex-machine-box">
-          <div class="ex-machine-box-lbl">🟢 Macchinario</div>
-          <div class="ex-machine-box-val">${ex.machine}</div>
-          <div class="ex-machine-box-alt">↩ ${ex.machineAlt}</div>
-        </div>
-        <div class="ex-note-box">💡 ${ex.note}</div>
-        <div class="sets-lbl">Serie — inserisci kg e rip, tocca ✓</div>
-        <div class="sets-grid">${sh}</div>
-        <div class="ex-personal-note">
-          <div class="ex-personal-note-lbl">📝 Le tue note</div>
-          <textarea class="note-field" id="note-${ex.id}" placeholder="Sensazioni, aggiustamenti, promemoria..." oninput="saveNote('${ex.id}')">${savedNote}</textarea>
-        </div>
-      </div>
-    </div>`;
-    (ex.section==='core'?coreC:mainC).appendChild(w);
-  });
-}
+  };
 
-function toggleEx(id){ document.getElementById('card-'+id).classList.toggle('open'); }
+  var container = document.getElementById("dayContainer");
+  var tabs = document.querySelectorAll(".tab");
+  var currentDay = localStorage.getItem(STORAGE_PREFIX + "lastDay") || "A";
 
-function sf(exId,si,dayId){
-  const kg=document.getElementById('kg-'+exId+'-'+si)?.value;
-  const rp=document.getElementById('rp-'+exId+'-'+si)?.value;
-  const d=load(); if(!d[exId])d[exId]={}; if(!d[exId][si])d[exId][si]={};
-  if(kg!==undefined)d[exId][si].kg=kg; if(rp!==undefined)d[exId][si].reps=rp; save(d);
-  if(kg)document.getElementById('kg-'+exId+'-'+si)?.classList.add('filled');
-  if(rp)document.getElementById('rp-'+exId+'-'+si)?.classList.add('filled');
-  updateLast(exId,si,kg,rp);
+  function loadField(exId, field){
+    var v = localStorage.getItem(STORAGE_PREFIX + exId + "_" + field);
+    return v === null ? "" : v;
+  }
+  function saveField(exId, field, value){
+    localStorage.setItem(STORAGE_PREFIX + exId + "_" + field, value);
+  }
+  function loadSets(exId){
+    var v = localStorage.getItem(STORAGE_PREFIX + exId + "_sets");
+    return v ? JSON.parse(v) : [];
+  }
+  function saveSets(exId, arr){
+    localStorage.setItem(STORAGE_PREFIX + exId + "_sets", JSON.stringify(arr));
+  }
 
-  // Auto-fill: se è la prima serie, copia kg/rip nelle serie successive ancora vuote
-  if(si===0){
-    const ex = DAYS[dayId]?.exercises.find(e=>e.id===exId);
-    if(ex){
-      for(let s=1;s<ex.sets;s++){
-        if(!d[exId][s]) d[exId][s]={};
-        const kgEl = document.getElementById('kg-'+exId+'-'+s);
-        const rpEl = document.getElementById('rp-'+exId+'-'+s);
-        if(kg && !d[exId][s].kg){
-          d[exId][s].kg = kg;
-          if(kgEl){ kgEl.value = kg; kgEl.classList.add('filled'); }
-          updateLast(exId,s,kg,null);
-        }
-        if(rp && !d[exId][s].reps){
-          d[exId][s].reps = rp;
-          if(rpEl){ rpEl.value = rp; rpEl.classList.add('filled'); }
-          updateLast(exId,s,null,rp);
-        }
+  function numSetsFromTarget(target){
+    var m = target.match(/(\d+)\s*serie/i) || target.match(/^(\d+)\s*x/i) || target.match(/(\d+)\s*x\s*\d/i);
+    return m ? parseInt(m[1], 10) : 3;
+  }
+
+  function renderExercise(ex, sectionType){
+    var card = document.createElement("div");
+    card.className = "card " + sectionType;
+
+    var name = document.createElement("div");
+    name.className = "ex-name";
+    name.textContent = ex.name;
+    card.appendChild(name);
+
+    var target = document.createElement("div");
+    target.className = "ex-target";
+    target.textContent = ex.target;
+    card.appendChild(target);
+
+    if (!ex.noWeight) {
+      var row = document.createElement("div");
+      row.className = "row";
+
+      var kgField = document.createElement("div");
+      kgField.className = "field";
+      kgField.innerHTML = '<label>Kg</label>';
+      var kgInput = document.createElement("input");
+      kgInput.type = "number"; kgInput.inputMode = "decimal"; kgInput.placeholder = "0";
+      kgInput.value = loadField(ex.id, "kg");
+      kgInput.addEventListener("input", function(){ saveField(ex.id, "kg", kgInput.value); });
+      kgField.appendChild(kgInput);
+
+      var repsField = document.createElement("div");
+      repsField.className = "field";
+      repsField.innerHTML = '<label>Rip.</label>';
+      var repsInput = document.createElement("input");
+      repsInput.type = "number"; repsInput.inputMode = "numeric"; repsInput.placeholder = "0";
+      repsInput.value = loadField(ex.id, "reps");
+      repsInput.addEventListener("input", function(){ saveField(ex.id, "reps", repsInput.value); });
+      repsField.appendChild(repsInput);
+
+      row.appendChild(kgField);
+      row.appendChild(repsField);
+      card.appendChild(row);
+
+      var nSets = numSetsFromTarget(ex.target);
+      var setState = loadSets(ex.id);
+      if (setState.length !== nSets) {
+        setState = new Array(nSets).fill(false);
       }
-      save(d);
+      var setcheck = document.createElement("div");
+      setcheck.className = "setcheck";
+      for (var i = 0; i < nSets; i++) {
+        (function(idx){
+          var box = document.createElement("div");
+          box.className = "setbox" + (setState[idx] ? " done" : "");
+          box.textContent = "S" + (idx + 1);
+          box.addEventListener("click", function(){
+            setState[idx] = !setState[idx];
+            box.classList.toggle("done", setState[idx]);
+            saveSets(ex.id, setState);
+          });
+          setcheck.appendChild(box);
+        })(i);
+      }
+      card.appendChild(setcheck);
     }
-  }
-}
 
-function md(exId,si,dayId){
-  const d=load(); if(!d[exId])d[exId]={}; if(!d[exId][si])d[exId][si]={};
-  const kgE=document.getElementById('kg-'+exId+'-'+si);
-  const rpE=document.getElementById('rp-'+exId+'-'+si);
-  if(kgE?.value)d[exId][si].kg=kgE.value; if(rpE?.value)d[exId][si].reps=rpE.value;
-  const was=d[exId][si].done; d[exId][si].done=!was;
-  if(d[exId]._skipped)delete d[exId]._skipped; save(d);
-  if(kgE?.value || rpE?.value) updateLast(exId,si,kgE?.value,rpE?.value);
-  const num=document.getElementById('snum-'+exId+'-'+si);
-  const btn=document.querySelector(`#row-${exId}-${si} .set-go`);
-  const card=document.getElementById('card-'+exId);
-  if(d[exId][si].done){
-    num?.classList.add('done'); if(btn){btn.textContent='↺';btn.classList.add('done-btn');}
-    card?.classList.remove('skipped'); checkEx(exId,dayId);
-  } else {
-    num?.classList.remove('done'); if(btn){btn.textContent='✓';btn.classList.remove('done-btn');}
-  }
-}
-
-function checkEx(exId,dayId){
-  const day=DAYS[dayId]; const ex=day.exercises.find(e=>e.id===exId);
-  const d=load(); const ed=d[exId]||{}; let all=true;
-  for(let s=0;s<ex.sets;s++){if(!ed[s]?.done){all=false;break;}}
-  if(all){
-    const card=document.getElementById('card-'+exId); if(card)card.style.opacity='0.55';
-    const idx=day.exercises.findIndex(e=>e.id===exId);
-    if(idx<day.exercises.length-1){
-      const nx=day.exercises[idx+1];
-      setTimeout(()=>{
-        const nc=document.getElementById('card-'+nx.id);
-        if(nc&&!nc.classList.contains('open'))nc.classList.add('open');
-        nc?.scrollIntoView({behavior:'smooth',block:'start'});
-      },300);
+    if (ex.rest) {
+      var restTag = document.createElement("div");
+      restTag.className = "rest-tag";
+      restTag.textContent = "Recupero: " + ex.rest;
+      card.appendChild(restTag);
     }
-    checkAllDone(dayId);
+
+    var note = document.createElement("textarea");
+    note.className = "note";
+    note.placeholder = "Nota (sensazioni, variazione, infortunio...)";
+    note.value = loadField(ex.id, "note");
+    note.addEventListener("input", function(){ saveField(ex.id, "note", note.value); });
+    card.appendChild(note);
+
+    return card;
   }
-}
 
-function checkAllDone(dayId){
-  const day=DAYS[dayId]; const d=load(); let all=true;
-  for(const ex of day.exercises){for(let s=0;s<ex.sets;s++){if(!d[ex.id]?.[s]?.done){all=false;break;}}if(!all)break;}
-  if(all){ document.getElementById('done-'+dayId)?.classList.add('show'); }
-}
+  function renderDay(dayKey){
+    var day = DAYS[dayKey];
+    container.innerHTML = "";
 
-function finishDay(dayId){
-  const day=DAYS[dayId]; const d=load();
-  let done=0; const skipped=[];
-  day.exercises.forEach(ex=>{
-    const ed=d[ex.id]||{};
-    const ds=Object.values(ed).filter(s=>s&&s.done).length;
-    if(ds>=ex.sets){ done++; } else {
-      if(!d[ex.id])d[ex.id]={};
-      d[ex.id]._skipped=true; skipped.push(ex.name.split('(')[0].trim());
-      const card=document.getElementById('card-'+ex.id);
-      if(card){card.classList.add('skipped');card.classList.remove('open');}
-      const ne=card?.querySelector('.ex-name');
-      if(ne&&!ne.querySelector('.skip-badge'))ne.insertAdjacentHTML('beforeend','<span class="skip-badge">NON SVOLTO</span>');
+    if (day.stationNote) {
+      var sn = document.createElement("div");
+      sn.className = "station-note";
+      sn.textContent = day.stationNote;
+      container.appendChild(sn);
     }
+
+    day.sections.forEach(function(section){
+      var wrap = document.createElement("div");
+      wrap.className = "section";
+
+      var title = document.createElement("div");
+      title.className = "section-title";
+      var dotClass = section.type === "main" ? day.dotClass : section.type;
+      title.innerHTML = '<span class="dot ' + dotClass + '"></span><span>' + section.title + "</span>";
+      wrap.appendChild(title);
+
+      var cardClass = section.type === "main" ? day.accentClass : section.type;
+      section.exercises.forEach(function(ex){
+        wrap.appendChild(renderExercise(ex, cardClass));
+      });
+
+      container.appendChild(wrap);
+    });
+  }
+
+  function setActiveTab(dayKey){
+    tabs.forEach(function(t){
+      t.classList.toggle("active", t.dataset.day === dayKey);
+    });
+  }
+
+  function switchDay(dayKey){
+    currentDay = dayKey;
+    localStorage.setItem(STORAGE_PREFIX + "lastDay", dayKey);
+    setActiveTab(dayKey);
+    renderDay(dayKey);
+  }
+
+  tabs.forEach(function(t){
+    t.addEventListener("click", function(){ switchDay(t.dataset.day); });
   });
-  save(d);
-  if(!skipped.length){
-    document.getElementById('done-'+dayId)?.classList.add('show');
-  } else {
-    const banner=document.getElementById('partial-'+dayId);
-    const msg=document.getElementById('partial-'+dayId+'-msg');
-    if(msg) msg.textContent = skipped.length===day.exercises.length
-      ? 'Nessun esercizio completato. Tutti salvati come "non svolto".'
-      : `${done} completati ✓   Non svolti: ${skipped.join(', ')}.`;
-    banner?.classList.add('show');
-  }
-  setTimeout(()=>document.getElementById(skipped.length?'partial-'+dayId:'done-'+dayId)?.scrollIntoView({behavior:'smooth'}),200);
-}
 
-// ═══ DAY SWITCH ═══
-const ACC={a:'#3b6fd4',b:'#c2560a',note:'#ca8a04'};
-function switchDay(id){
-  ['a','b','note'].forEach(d=>{
-    const el=document.getElementById('day-'+d); if(el)el.style.display=d===id?'block':'none';
-    const t=document.getElementById('tab-'+d);
-    if(t){t.classList.toggle('active',d===id);t.style.color=d===id?ACC[d]:'';t.style.borderBottomColor=d===id?ACC[d]:'transparent';}
+  document.getElementById("saveBtn").addEventListener("click", function(){
+    var btn = document.getElementById("saveBtn");
+    var original = btn.textContent;
+    btn.textContent = "Salvato ✓";
+    setTimeout(function(){ btn.textContent = original; }, 1200);
   });
-  currentDay=id; if(DAYS[id])renderDay(id); window.scrollTo({top:0,behavior:'smooth'});
-}
 
-// ═══ RESET ═══
-function resetDay(dayId){
-  if(!confirm('Azzerare i dati di oggi per questa giornata? (I tuoi ultimi kg/rip e le note restano comunque salvati)'))return;
-  const d=load(); DAYS[dayId]?.exercises.forEach(ex=>delete d[ex.id]); save(d);
-  ['done-','partial-'].forEach(p=>document.getElementById(p+dayId)?.classList.remove('show'));
-  renderDay(dayId);
-}
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    if (!confirm("Azzerare le spunte delle serie e i kg/rip di questo giorno?")) return;
+    var day = DAYS[currentDay];
+    day.sections.forEach(function(section){
+      section.exercises.forEach(function(ex){
+        localStorage.removeItem(STORAGE_PREFIX + ex.id + "_kg");
+        localStorage.removeItem(STORAGE_PREFIX + ex.id + "_reps");
+        localStorage.removeItem(STORAGE_PREFIX + ex.id + "_sets");
+      });
+    });
+    renderDay(currentDay);
+  });
 
-// ═══ PWA: Service Worker + Install Banner ═══
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-}
-// Mostra banner "Aggiungi a Home" solo in Safari e solo una volta
-window.addEventListener('load',()=>{
-  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-  const dismissed = localStorage.getItem('gt_install_dismissed');
-  const isStandalone = window.navigator.standalone;
-  if(isSafari && !dismissed && !isStandalone){
-    document.getElementById('installBanner')?.classList.add('show');
+  switchDay(currentDay);
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
   }
-});
-
-// INIT
-renderDay('a');
+})();
 </script>
 </body>
 </html>
